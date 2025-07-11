@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mysql修改语法详解-纯净下载库</title>
+<meta property="og:title" content="mysql修改语法详解">
+<meta property="og:description" content="<h1>mysql修改语法详解</h1><p>在数据库管理中，修改现有表结构或数据是一项常见的任务。MySQL 提供了多种 `ALTER TABLE` 语句来执行这些修改。本文将深入探讨 MySQL 的修改语法，并提供详细的示例。</p><h2>修改表名</h2><p>要修改表名，可以使用以下语句：...">
+<meta property="og:url" content="https://xiazaiku.github.io/5k3ca4zvy.html">
+<meta property="og:type" content="article">
+    <style>
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            color: #444;
+            margin-bottom: 30px;
+        }
+        .tags {
+            margin: 30px 0;
+            font-size: 0.9em;
+        }
+        .tags a {
+            background-color: #eee;
+            color: #333;
+            padding: 5px 10px;
+            text-decoration: none;
+            margin-right: 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .tags a:hover {
+            background-color: #ccc;
+        }
+        /* 静态推荐文章样式 */
+        .recommend-articles {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #f5f9ff;
+            border-radius: 8px;
+            border: 1px solid #e0e8f5;
+        }
+
+        .recommend-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .recommend-list li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .recommend-list li:before {
+            content: "•";
+            color: #4a89dc;
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        .recommend-list a {
+            color: #3a7bd5;
+            text-decoration: none;
+        }
+        .recommend-list a:hover {
+            color: #00d2ff;
+            text-decoration: underline;
+        }
+        /* 友情链接样式优化 */
+        .friendly-links {
+            margin-top: 50px;
+        }
+        .friendly-links .container {
+            margin-bottom: 30px;
+        }
+        .friendly-links .title {
+            font-size: 1.1em;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .friendly-links ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .friendly-links li a {
+            display: block;
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9em;
+            border: 1px solid #eee;
+        }
+        .friendly-links li a:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+	<script src="/shequ.js"></script>
+</head>
+<body>
+
+    <h1>mysql修改语法详解</h1>
+
+    <div class="content">
+        <p> <h1>mysql修改语法详解</h1><p>在数据库管理中，修改现有表结构或数据是一项常见的任务。MySQL 提供了多种 `ALTER TABLE` 语句来执行这些修改。本文将深入探讨 MySQL 的修改语法，并提供详细的示例。</p><h2>修改表名</h2><p>要修改表名，可以使用以下语句：</p><code>ALTER TABLE 旧表名 RENAME TO 新表名;</code><p>例如，将表 `TYPE` 重命名为 `type`：</p><code>mysql> ALTER TABLE TYPE RENAME TO type;</code><h2>修改列名</h2><p>要修改表的列名，可以使用 `CHANGE` 子句：</p><code>ALTER TABLE 表名 CHANGE 旧列名 新列名 数据类型 [约束];</code><p>例如，将表 `users` 中的列 `old_name` 修改为 `new_name`，数据类型为 `VARCHAR(255)`：</p><code>ALTER TABLE users CHANGE old_name new_name VARCHAR(255);</code><h2>添加列</h2><p>要向表中添加新列，可以使用 `ADD` 子句：</p><code>ALTER TABLE 表名 ADD 列名 数据类型 [约束] [FIRST | AFTER 列名];</code><p>例如，向表 `users` 添加一个名为 `gender`，类型为 `VARCHAR(2)` 的列：</p><code>ALTER TABLE users ADD gender VARCHAR(2);</code><p>如果需要将新列添加到特定位置，可以使用 `FIRST` 或 `AFTER` 子句。</p><h2>设置主键</h2><p>为已存在的字段设置主键需要先确保该字段不允许为空，然后才能添加主键约束。如果原本存在主键需要先删除原主键，然后才能重新设置主键。<p>例如给mytable_1表增加主键name和id</p><code>ALTER TABLE mytable_1 MODIFY COLUMN name CHAR(1) NOT NULL;</code></br><code>ALTER TABLE mytable_1 DROP PRIMARY KEY;</code></br><code>ALTER TABLE mytable_1 ADD PRIMARY KEY(id,name);</code></p><h2>其他修改操作</h2><p>除了上述操作外，`ALTER TABLE` 语句还可以执行以下修改：</p><ul>    <li>修改列的数据类型</li>    <li>添加或删除约束（如主键、外键、唯一约束）</li>    <li>修改表的存储引擎</li></ul><p>在进行任何修改操作之前，请务必备份数据，以防止意外情况发生。</p><p><b>注意:</b>在进行任何数据库修改之前，请务必备份数据，以防止数据丢失或*毁。并且在生产环境操作之前，尽量在测试环境验证。</p><h1>↓↓下载地址在最下面↓↓</h1></p>
+
+    </div>
+    
+    <!-- 静态推荐文章区域 -->
+    <div class="recommend-articles">
+        <h3>2篇随机内容推荐</h3>
+        <ul class="recommend-list">
+ <li><a href="3v3x3aa.html">LESLIE Note v5.37 绿色便携版</a></li><li><a href="bhjp6.html">浏览器效率工具：Chrono Power Action 深度体验</a></li><li><a href="5vzw172unbq.html">2.1 公斤按 3 公斤收费：快递“向上取整”计费*幕曝光</a></li><li><a href="crtrt.html">雪藏HsFreezer(游戏冻结工具) v2.24</a></li><li><a href="nsg1m1p47r.html">微信这次更新，终于能把吃掉的空间吐出来了</a></li>
+        </ul>
+    </div>
+    
+
+    
+    <!-- 友情链接区域 -->
+    <div class="friendly-links">
+        <div class="container">
+            <h4 class="title">生活点滴好用</h4>
+            <ul>
+                <li><a href="http://www.weizhang8.cn/" rel="nofollow" target="_blank">违章查询</a></li>
+                <li><a href="https://www.didiglobal.com/" rel="nofollow" target="_blank">滴滴打车</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <h4 class="title">购物网址大全</h4>
+            <ul>
+                <li><a href="http://www.vip.com/" rel="nofollow" target="_blank">唯品会</a></li>
+                <li><a href="http://www.vmall.com/" rel="nofollow" target="_blank">华为商城</a></li>
+                <li><a href="http://www.tmall.com/" rel="nofollow" target="_blank">天猫商城</a></li>
+                <li><a href="https://www.amazon.cn/" rel="nofollow" target="_blank">亚马逊</a></li>
+                <li><a href="http://www.jd.com/" rel="nofollow" target="_blank">京东商城</a></li>
+            </ul>
+        </div>
+    </div>
+<a href="/sitemap.xml" target="_blank">xml网站地图</a>
+</body>
+</html>
