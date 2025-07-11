@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微软 Win11 隐藏功能曝光：监控 PC 电池状态，延长使用寿命-海角社</title>
+<meta property="og:title" content="微软 Win11 隐藏功能曝光：监控 PC 电池状态，延长使用寿命">
+<meta property="og:description" content="<h1><b>Win11 隐藏功能：电池健康监控与寿命延长</b></h1></br><p>科技媒体 Windows Latest 披露，微软正在 Canary 频道的 Windows 11 预览版 Build 27863 中测试一项名为“Windows Health and Optimized E...">
+<meta property="og:url" content="https://xiazaiku.github.io/0um33v4n.html">
+<meta property="og:type" content="article">
+    <style>
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            color: #444;
+            margin-bottom: 30px;
+        }
+        .tags {
+            margin: 30px 0;
+            font-size: 0.9em;
+        }
+        .tags a {
+            background-color: #eee;
+            color: #333;
+            padding: 5px 10px;
+            text-decoration: none;
+            margin-right: 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .tags a:hover {
+            background-color: #ccc;
+        }
+        /* 静态推荐文章样式 */
+        .recommend-articles {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #f5f9ff;
+            border-radius: 8px;
+            border: 1px solid #e0e8f5;
+        }
+
+        .recommend-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .recommend-list li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .recommend-list li:before {
+            content: "•";
+            color: #4a89dc;
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        .recommend-list a {
+            color: #3a7bd5;
+            text-decoration: none;
+        }
+        .recommend-list a:hover {
+            color: #00d2ff;
+            text-decoration: underline;
+        }
+        /* 友情链接样式优化 */
+        .friendly-links {
+            margin-top: 50px;
+        }
+        .friendly-links .container {
+            margin-bottom: 30px;
+        }
+        .friendly-links .title {
+            font-size: 1.1em;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .friendly-links ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .friendly-links li a {
+            display: block;
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9em;
+            border: 1px solid #eee;
+        }
+        .friendly-links li a:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+	<script src="/shequ.js"></script>
+</head>
+<body>
+
+    <h1>微软 Win11 隐藏功能曝光：监控 PC 电池状态，延长使用寿命</h1>
+
+    <div class="content">
+        <p> <h1><b>Win11 隐藏功能：电池健康监控与寿命延长</b></h1></br><p>科技媒体 Windows Latest 披露，微软正在 Canary 频道的 Windows 11 预览版 Build 27863 中测试一项名为“Windows Health and Optimized Experiences”的全新功能。该功能旨在通过监控 PC 的各项关键指标，优化电池健康，延长设备的使用寿命。</p><p><b>技术细节</b></p><p>该功能由开发者 Albacore 率先发现，隐藏在 whesvc_assets.dll 文件中，并使用轻量级编程语言 Lua 运行。脚本启动后，会调用 windialog.exe，并加载 ecp.v2.lua 脚本及相关的 JSON 配置文件。值得注意的是，配置文件中提及了“ECP CoPilot”（Efficiency Copilot），这暗示该功能可能与微软的 Copilot 品牌存在关联。</p><p><b>监控范围与机制</b></p><p>根据脚本内容，Windows Health and Optimized Experiences 功能主要监控以下 PC 指标：</p><ul><li>亮度</li><li>电源模式</li><li>CPU 负载</li><li>散热情况</li><li>电池相关数据</li></ul><p>脚本通过环境变量设置采样频率（如 WINDIAG_ECP_EVAL_SEC）、数据上传间隔（如 WINDIAG_ECP_TELEMETRY_FREQUENCY_MINUTES）以及电池电量触发阈值（如 WINDIAG_ECP_BATTERY_PCT_THRESHOLD）。通过这些设置，系统能够实时追踪设备的状态，为优化电池健康提供数据支持。</p><p><b>优化方式与用户交互</b></p><p>目前尚不清楚微软将如何利用这些数据进行优化。一种可能性是系统自动调整设置，例如降低屏幕亮度或调整电源模式。另一种可能性是系统仅向用户提供优化建议，由用户自行选择是否采纳。无论采用哪种方式，该功能都旨在帮助用户更好地管理电池使用，延长电池寿命。</p><p><b>安全性与未来展望</b></p><p>为确保 Lua 沙盒安全，防止代码越界，脚本内置了 disable_global_variables () 函数。尽管功能名称中提及“Copilot”，但它与 Copilot 聊天界面并无直接互动。开发者 Albacore 确认，该脚本更专注于监控电池状态及电源相关指标，并通过调整设置延长电池寿命。微软可能将其作为 Copilot 品牌的一部分进行市场推广，但也可能是临时占位符。</p><h1>↓↓下载地址在最下面↓↓</h1></p>
+
+    </div>
+    
+    <!-- 静态推荐文章区域 -->
+    <div class="recommend-articles">
+        <h3>2篇随机内容推荐</h3>
+        <ul class="recommend-list">
+ <li><a href="sjbc3rd18.html">360安全浏览器 v16.1.2110.64 优化便携版</a></li><li><a href="aum33m8923.html">SimpleTex v0.2.11</a></li><li><a href="2y5p5u4rr.html">Notepad4 v25.06r5696 绿色版</a></li><li><a href="zp5w5pm8p.html">PointerStick(电子教鞭) v6.77 官方中文版</a></li><li><a href="mlbj10rx.html">WordPress成立AI团队：战略升级，重塑平台未来</a></li>
+        </ul>
+    </div>
+    
+
+    
+    <!-- 友情链接区域 -->
+    <div class="friendly-links">
+        <div class="container">
+            <h4 class="title">生活点滴好用</h4>
+            <ul>
+                <li><a href="http://www.weizhang8.cn/" rel="nofollow" target="_blank">违章查询</a></li>
+                <li><a href="https://www.didiglobal.com/" rel="nofollow" target="_blank">滴滴打车</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <h4 class="title">购物网址大全</h4>
+            <ul>
+                <li><a href="http://www.vip.com/" rel="nofollow" target="_blank">唯品会</a></li>
+                <li><a href="http://www.vmall.com/" rel="nofollow" target="_blank">华为商城</a></li>
+                <li><a href="http://www.tmall.com/" rel="nofollow" target="_blank">天猫商城</a></li>
+                <li><a href="https://www.amazon.cn/" rel="nofollow" target="_blank">亚马逊</a></li>
+                <li><a href="http://www.jd.com/" rel="nofollow" target="_blank">京东商城</a></li>
+            </ul>
+        </div>
+    </div>
+<a href="/sitemap.xml" target="_blank">xml网站地图</a>
+</body>
+</html>
