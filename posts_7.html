@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表 - 小梦静态博客</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+            color: #444;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e0e8f5;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .article-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        .article-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .article-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .article-content {
+            padding: 25px;
+        }
+        .article-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .article-title a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .article-title a:hover {
+            color: #4a89dc;
+            text-decoration: underline;
+        }
+        .article-excerpt {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px dashed #eaeaea;
+            padding-top: 15px;
+        }
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background-color: #f0f5ff;
+            color: #4a89dc;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .tag:hover {
+            background-color: #4a89dc;
+            color: white;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 16px;
+            background: #f0f5ff;
+            color: #4a89dc;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #c0d0f0;
+            transition: all 0.3s ease;
+        }
+        .pagination a:hover {
+            background: #4a89dc;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(74, 137, 220, 0.5);
+        }
+        .pagination .current {
+            background: #4a89dc;
+            color: #fff;
+            font-weight: bold;
+        }
+        .pagination .disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            background: #f5f9ff;
+        }
+        @media (max-width: 600px) {
+            .pagination {
+                gap: 5px;
+            }
+            .pagination a, .pagination span {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 友情链接样式 */
+        .friendly-links {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #eaeaea;
+        }
+        .friendly-links .container {
+            margin-bottom: 30px;
+        }
+        .friendly-links .title {
+            font-size: 1.3rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .friendly-links ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .friendly-links li a {
+            display: block;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .friendly-links li a:hover {
+            background: #4a89dc;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin: 40px 0 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #4a89dc;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .article-item {
+                margin-bottom: 20px;
+            }
+            .article-content {
+                padding: 20px;
+            }
+            .article-title {
+                font-size: 1.3rem;
+            }
+            .article-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>文章列表</h1>
+        <p>探索我们的精选文章，发现知识与灵感</p>
+    </div>
+    
+    <div class="article-list">
+        <!-- 文章列表将由 
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="826d8.html">Android Salt Player播放器 v10.9.0</a></h2>
+        <div class="article-excerpt"><h1>Android Salt Player播放器 v10.9.0</h1></br><p><b>Salt Player</b>（中文名：椒盐音乐）是一款强大的本地音乐播放器，它支持多种音频格式，并拥有美观的用户界面。软件能够根据专辑封面的色彩智能生成动态流光效果，并提供丰富的主题选择，满足个性化...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Salt%20Player" class="tag">Salt Player</a><a href="tags.html?tag=%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">音乐播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9hy0rpndq.html">Fort Firewall(防火墙工具) v3.19.3</a></h2>
+        <div class="article-excerpt"><h1>Fort Firewall v3.19.3：轻量级开源防火墙，全面保护你的网络安全</h1><p>告别臃肿繁琐的传统防火墙，拥抱轻巧高效的 Fort Firewall！这款开源免费的防火墙工具，以其小巧的体积和强大的功能，为你的电脑提供全方位的网络安全保护。</p><h2>核心功能</h2>...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%98%B2%E7%81%AB%E5%A2%99%EF%BC%8C%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8" class="tag">防火墙，网络安全</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="i35j.html">Cromite v139.0.7258.143 绿色版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p>Cromite是一款基于Bromite的Chromium浏览器分叉版本，专为增强<b>隐私保护</b>和<b>广告拦截</b>而设计。它不仅继承了Bromite的优秀特性，还进一步强化了隐私保护的功能，致力于为用户提供一个更加安全、纯净的浏览...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%9A%90%E7%A7%81%E4%BF%9D%E6%8A%A4%EF%BC%8C%E6%B5%8F%E8%A7%88%E5%99%A8" class="tag">隐私保护，浏览器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="j5sagfinm.html">Cherry Studio(模型服务聚合) v1.5.7</a></h2>
+        <div class="article-excerpt"><h1>Cherry Studio：AI模型服务聚合平台，打造智能工作流</h1><p><b>Cherry Studio</b> 是一款专为专业人士设计的桌面客户端，旨在聚合多种 <b>AI 模型服务</b>，提升工作效率。它内置了30多个行业的智能助手，支持Windows和macOS两大主流操作系...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Studio%EF%BC%8C%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1" class="tag">Studio，模型服务</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="tald4v.html">Calibre(阅读&转换)v8.9.0 官方版</a></h2>
+        <div class="article-excerpt"><h1>Calibre(阅读&转换)v8.9.0 官方版</h1><p><b>Calibre</b>是一款免费且强大的电子书管理工具，不仅提供阅读功能，还支持电子书制作与格式转换。中文版界面友好，操作简洁，无需复杂设置，打开即可使用。</p><p><b>Calibre中文版</b>的核心优势在于其全...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Calibre" class="tag">Calibre</a><a href="tags.html?tag=%E7%94%B5%E5%AD%90%E4%B9%A6" class="tag">电子书</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="hadmec.html">Android Rotation Pro(强制转屏) v28.8.0 高级版</a></h2>
+        <div class="article-excerpt"><h1>Android Rotation Pro：终极屏幕控制，尽享高级体验</h1><p>厌倦了手机屏幕一成不变的显示方式？<b>Android Rotation Pro</b> 让你彻底掌控屏幕方向，解锁前所未有的自定义体验。这款高级版本为你带来更强大的功能，更稳定的性能，让你在任何场景下都能获...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%B1%8F%E5%B9%95%E6%97%8B%E8%BD%AC%EF%BC%8CAndroid%E5%B7%A5%E5%85%B7" class="tag">屏幕旋转，Android工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="w2t7piu.html">Android XPlayer v2.4.7.6 修改版</a></h2>
+        <div class="article-excerpt"><h1><b>Android XPlayer v2.4.7.6 修改版</b></h1></br><p><b>XPlayer</b>，一款全能的安卓视频播放器，支持各种视频格式，包括MKV、MP4、AVI等。它支持4K超高清视频播放，提供流畅、清晰的观影体验。利用硬件加速技术，XPlayer能够更高...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=XPlayer%EF%BC%8C%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">XPlayer，视频播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="g9dlarncgb.html">Qmmp(开源音乐播放器) v2.2.8 便携版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p><b>Qmmp</b>，一款基于Qt框架打造的开源音乐播放器，以其轻量级、高度定制化和跨平台特性，在众多音乐发烧友中广受欢迎。它不仅继承了Winamp的经典界面风格，更在功能上进行了扩展和创新，为用户带来极致的音乐体验。</p><h3>功能特...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Qmmp%EF%BC%8C%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">Qmmp，音乐播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="znafjvlqd.html">周鸿祎飞起一脚 1.2米“小孩哥”机器人被踹倒后直接躺平</a></h2>
+        <div class="article-excerpt"><h1>周鸿祎“暴力测试”人形机器人，一脚KO“小孩哥”</h1><p>8月22日，360创始人周鸿祎一段“暴力测试”人形机器人的视频在网上引发热议。视频中，周鸿祎参观了松延动力公司，并与该公司研发的N2人形机器人进行互动。</p><p>令人惊讶的是，互动过程中，周鸿祎突然飞起一脚，直接踹向身高1....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%91%A8%E9%B8%BF%E7%A5%8E%EF%BC%8C%E6%9C%BA%E5%99%A8%E4%BA%BA" class="tag">周鸿祎，机器人</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2g9f11eneziq.html">EmEditor v25.3.0 绿色便携版</a></h2>
+        <div class="article-excerpt"><h1>EmEditor v25.3.0 绿色便携版</h1></br><p>探索强大的<b>EmEditor文本编辑器</b>，一款启动迅速、功能全面的文本处理利器。它完美替代Windows记事本，胜任各类文本编辑任务，特别是在代码编辑和开发方面表现卓越。EmEditor v25.3.0全面支持U...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=EmEditor" class="tag">EmEditor</a><a href="tags.html?tag=%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8" class="tag">文本编辑器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="emux.html">Adobe Photoshop 2025 v26.10.0.7 绿色版</a></h2>
+        <div class="article-excerpt"><h1>Adobe Photoshop 2025 v26.10.0.7 绿色版</h1><p>体验 Adobe Photoshop 2025 (26.10.0.7版)，这款于2024年发布的专业图像处理软件。Photoshop 2025 (PS2025) 是全球范围内广受欢迎的图像处理、照片编辑及设...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Photoshop" class="tag">Photoshop</a><a href="tags.html?tag=%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86" class="tag">图像处理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ahp54rb.html">Adobe Photoshop 2025 (26.10.0.7) 特别版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1><p>Adobe图像处理软件 Photoshop 2025 正式版 (26.0.0版) 于2024年10月发布。Adobe Photoshop 2025 (PS2025) 是一款全球流行的专业图像处理、照片和设计软件。Adobe Photoshop中文修改版...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Photoshop%EF%BC%8C%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86" class="tag">Photoshop，图像处理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="a7ah91.html">京东拼拼重返社区团购：多地门店扩张加速</a></h2>
+        <div class="article-excerpt"><h1><b>京东拼拼重返社区团购：多地门店扩张加速</b></h1><p><b>京东</b>再次发力社区团购市场，旗下<b>京东拼拼</b>已在多地开设门店，加速线下布局。</p><p>继今年 4 月在北京房山启动首店后，<b>京东拼拼</b>近日在北京相继落地多个门店。除北京外，<b>京东拼拼<...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%BA%AC%E4%B8%9C%E6%8B%BC%E6%8B%BC%EF%BC%8C%E7%A4%BE%E5%8C%BA%E5%9B%A2%E8%B4%AD" class="tag">京东拼拼，社区团购</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="c2gf.html">Waterfox(水狐浏览器) v6.6.1 官方版</a></h2>
+        <div class="article-excerpt"><h1>Waterfox(水狐浏览器) v6.6.1 官方版</h1><p><b>Waterfox</b>：一款源于 Firefox 开源项目的 64 位高性能浏览器，自 2011 年问世以来，便致力于为用户提供卓越的浏览体验。其核心目标是打造速度*敏*捷、安全可靠的 Web 资源管理器，充分释放 ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Waterfox%EF%BC%8C%E6%B5%8F%E8%A7%88%E5%99%A8" class="tag">Waterfox，浏览器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="mr0p.html">Visual Studio Code 1.103.2 官方版</a></h2>
+        <div class="article-excerpt"><h1>Visual Studio Code 1.103.2 官方版↓↓下载地址在最下面↓↓</h1></br><p>Visual Studio Code是由微软公司精心打造的一款免费、开源且跨平台的代码编辑器。它巧妙地融合了微软在线编辑器 Visual Studio Online（代号：Monac...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Visual%20Studio%20Code%EF%BC%8C%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8" class="tag">Visual Studio Code，代码编辑器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="k6uuiw7h9w.html">微软 Win95 发布 30 周年：是技术革命，也是流行文化爆款</a></h2>
+        <div class="article-excerpt"><h1><b>微软 Win95 发布 30 周年：技术革命与流行文化现象</b></h1><p>8 月 24 日，适逢微软 Windows 95 操作系统发布 30 周年。这款具有划时代意义的操作系统，不仅代表着一次重大的技术飞跃，更在全球范围内掀起了一场影响深远的流行文化浪潮。</p><p>在 W...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Win95%EF%BC%8C%E5%BE%AE%E8%BD%AF" class="tag">Win95，微软</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="0pzs8kjq6z.html">Readest(电子书阅读器) v0.9.75</a></h2>
+        <div class="article-excerpt"><h1>Readest v0.9.75：沉浸式开源电子书阅读器</h1><p>探索 Readest，一款为深度阅读而生的开源电子书阅读器。Readest 基于 Next.js 15 和 Tauri v2 框架重构 Foliate，旨在提供卓越的跨平台阅读体验。目前已支持 macOS、Windows、...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%98%85%E8%AF%BB%E5%99%A8%EF%BC%8C%E7%94%B5%E5%AD%90%E4%B9%A6" class="tag">阅读器，电子书</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8v8lhntavw.html">jarkViewer(看图工具) v1.28 绿色版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1><p>jarkViewer 是一款基于 OpenCV 和各大图像库开发的开源看图软件。它以其简洁易用的操作界面和强大的图像格式支持，深受用户喜爱。用户可以通过鼠标滚轮在窗口两侧边缘轻松切换图片，在窗口中间区域滚轮进行放大和缩小操作。双击屏幕即可进入全屏模式，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=jarkViewer" class="tag">jarkViewer</a><a href="tags.html?tag=%E7%9C%8B%E5%9B%BE%E8%BD%AF%E4%BB%B6" class="tag">看图软件</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="z0hv9z4430xp.html">BiliLive-tools(B站录播工具) v2.5.1 绿色版</a></h2>
+        <div class="article-excerpt"><h1>BiliLive-tools(B站录播工具) v2.5.1 绿色版</h1><p><b>BiliLive-tools</b>是一款专为B站设计的<b>一站式录播工具</b>，旨在简化和优化B站录播的整个流程。它集成了弹幕转换、视频压制和B站投稿等功能，并支持录播姬与blrec的webhook...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=B%E7%AB%99%E5%BD%95%E6%92%AD%EF%BC%8C%E8%A7%86%E9%A2%91%E5%B7%A5%E5%85%B7" class="tag">B站录播，视频工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zpg989dnfv.html">Android AfuseKt(网络视频播放器) v2.9.3</a></h2>
+        <div class="article-excerpt"><h1>AfuseKt：安卓*力网络视频播放器v2.9.3</h1><p>AfuseKt 是一款专为安卓平台打造的<b>多功能网络视频播放器</b>，版本升级至v2.9.3。旨在为用户提供卓越的媒体播放体验，并优化了在线视频资源的访问和管理。</p><h2>核心功能与特点</h2><ul>    <...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E7%BD%91%E7%BB%9C%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8%EF%BC%8C%E5%AE%89%E5%8D%93" class="tag">网络视频播放器，安卓</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2324aj42kti0.html">Android 小冰箱 v2.2.7</a></h2>
+        <div class="article-excerpt"><h1><b>Android食材管理神器：小冰箱 v2.2.7，告别过期烦恼！</b></h1><p>还在为冰箱里的食材过期而烦恼吗？<b>小冰箱 v2.2.7</b> 是一款专为Android用户设计的<b>简单易用</b>的食材记录APP，助你轻松管理冰箱，告别过期浪费！</p><p>只需简单几...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%A3%9F%E6%9D%90%E7%AE%A1%E7%90%86%EF%BC%8C%E5%86%B0%E7%AE%B1" class="tag">食材管理，冰箱</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="h9pgx3z.html">UniGetUI(下载工具) v3.3.2</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1>UniGetUI (原 WingetUI) 旨在为 Windows 10 和 Windows 11 上常见的命令行界面 (CLI) 包管理器，如 Winget、Scoop、Chocolatey、Pip、Npm 和 .NET Tool 创建一个图形用户界面 (...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7%EF%BC%8CWingetUI" class="tag">下载工具，WingetUI</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="sbrv0b2c2ntj.html">谷歌安卓 16 升级防盗：手机失窃后，对方有解锁密码也无法访问银行等敏感 App</a></h2>
+        <div class="article-excerpt"><h1><b>Android 16 防盗升级：解锁密码失效，保护银行 App 安全</b></h1><p>谷歌最新 Android 16 QPR2 Beta 1 更新推出“身份检查”（Identity Check）功能，旨在提升 Pixel 设备在失窃后的数据安全防护能力。</p><p>该功能的核心...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Android%EF%BC%8C%E9%98%B2%E7%9B%97" class="tag">Android，防盗</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="hc9arj4.html">Blossom(笔记软件) v1.17.1</a></h2>
+        <div class="article-excerpt"><h1>Blossom：你的私有云端双链笔记与动态博客</h1><p><b>Blossom</b> v1.17.1 是一款强大的云端双链笔记软件，专为追求数据安全和知识高效管理的用户打造。它支持私有部署，让你可以完全掌控你的数据，告别隐私泄露的风险。你可以将你的珍贵笔记、个人照片和周详的计划安排安全...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E7%AC%94%E8%AE%B0%EF%BC%8C%E5%8F%8C%E9%93%BE" class="tag">笔记，双链</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="7c1exq.html">CopyQ(剪贴板增强工具) v11.0.0 官方便携版</a></h2>
+        <div class="article-excerpt"><h1>CopyQ - 强大剪贴板增强工具 v11.0.0 官方便携版</h1><p>CopyQ 是一款开源且使用 QT 框架编写的剪切板管理利器，为用户提供卓越的剪贴板管理体验。它不仅支持搜索、编辑历史等基础功能，更具备一系列高级特性，例如支持存储和处理包括图片在内的多种数据格式，以及灵活的命令行...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=CopyQ%EF%BC%8C%E5%89%AA%E8%B4%B4%E6%9D%BF%E5%B7%A5%E5%85%B7" class="tag">CopyQ，剪贴板工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="c78wi.html">哔哩哔哩PC客户端 v1.17.1.4420</a></h2>
+        <div class="article-excerpt"><h1>哔哩哔哩PC客户端 v1.17.1.4420</h1><p>哔哩哔哩官方PC客户端，带来更流畅、更丰富的二次元娱乐体验。告别UWP版本，全新32位客户端，兼容各类Windows系统。探索无尽动漫、游戏、影视内容，与百万UP主互动，发现你的兴趣所在。</p><h2>软件特性</h2><ul> ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%EF%BC%8CPC%E5%AE%A2%E6%88%B7%E7%AB%AF" class="tag">哔哩哔哩，PC客户端</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zaajcm.html">苹果首款折叠 iPhone 曝料：配自研 C2 基带芯片、调整屏幕方案减少折痕、Touch ID 指纹识别、无 SIM 卡槽</a></h2>
+        <div class="article-excerpt"><h1><b>苹果折叠 iPhone 震撼曝料：自研 C2 基带、无痕屏幕、Touch ID 加持！</b></h1></br><p>备受瞩目的苹果首款折叠屏 iPhone (暂称 iPhone Fold) 终于迎来重磅消息！ 彭博社知名记者马克・古尔曼爆料，这款划时代的产品预计将于 2026 年问...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=iPhone%20Fold%EF%BC%8CC2%E5%9F%BA%E5%B8%A6" class="tag">iPhone Fold，C2基带</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="px0c6pq3dvpi.html">QOwnNotes(开源Markdown笔记本) v25.8.7 绿色版</a></h2>
+        <div class="article-excerpt"><h1><b>QOwnNotes：开源Markdown笔记本，极致自由的纯文本笔记体验</b></h1><p>QOwnNotes是一款强大的开源记事本，专为追求极致自由和灵活性的用户设计。它完美支持 Markdown 语法，并提供针对GNU / Linux, Mac OS X和Windows的全平台...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Markdown%EF%BC%8C%E7%AC%94%E8%AE%B0" class="tag">Markdown，笔记</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fwxyiqge.html">Twinkle Tray(多屏亮度调节工具) v1.17.0 官方中文版</a></h2>
+        <div class="article-excerpt"><h1>Twinkle Tray：多屏亮度调节的终极解决方案</h1><p>告别繁琐的屏幕亮度调节！<b>Twinkle Tray v1.17.0 官方中文版</b>，为您带来前所未有的便捷体验。这款强大的亮度调节工具，旨在简化多显示器环境下的亮度管理，让您轻松掌控每个屏幕的亮度，提高工作效率，保护...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%BA%AE%E5%BA%A6%E8%B0%83%E8%8A%82%EF%BC%8C%E5%A4%9A%E5%B1%8F" class="tag">亮度调节，多屏</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="e1t6994.html">Koodo Reader(跨平台电子书阅读器) v2.1.2</a></h2>
+        <div class="article-excerpt"><h1><b>Koodo Reader：跨平台电子书阅读的全新体验</b></h1><p>Koodo Reader 是一款卓越的跨平台电子书阅读器，旨在为用户提供无缝且个性化的阅读体验。它支持多种操作系统，包括 Windows、macOS、Linux 和网页版，无论您身在何处，都可以随时随地沉浸在书...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E7%94%B5%E5%AD%90%E4%B9%A6%E9%98%85%E8%AF%BB%E5%99%A8%EF%BC%8CKoodo%20Reader" class="tag">电子书阅读器，Koodo Reader</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lw7pbinp7x6y.html">XiaoYao_快速跳转 v4.4.6 绿色版</a></h2>
+        <div class="article-excerpt"><h1>XiaoYao_快速跳转 v4.4.6 绿色版 - 文件管理器增强利器</h1><p><b>XiaoYao_快速跳转</b>是一款由国内开发者打造的Windows系统效率提升工具，专注于解决文件操作中的路径跳转痛点。它能够智能识别并一键跳转至当前资源管理器、Total Commander、D...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%BF%AB%E9%80%9F%E8%B7%B3%E8%BD%AC" class="tag">快速跳转</a><a href="tags.html?tag=%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8" class="tag">文件管理器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="btql.html">File Commander(文件指挥官)v6.6.34940高级破解版</a></h2>
+        <div class="article-excerpt"><h1>File Commander(文件指挥官)v6.6.34940高级破解版</h1></br><p>文件指挥官是一款功能全面且强大的文件管理器，旨在助您轻松掌控Android设备及云存储中的各类文件。它以简洁直观的界面，让您能够高效管理图片、音乐、视频、文档等不同类型的媒体库。只需轻点几下，即...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E6%96%87%E4%BB%B6%E6%8C%87%E6%8C%A5%E5%AE%98%EF%BC%8C%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8" class="tag">文件指挥官，文件管理器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="uldda3ehwkff.html">必剪 v3.10.4 官方版</a></h2>
+        <div class="article-excerpt"><h1>必剪 v3.10.4 官方版</h1><p><b>为UP主而生的必剪PC端，迎来v3.10.4官方版更新！</b>本次更新重点强化素材集市功能，集成更多B站特色元素，助力UP主高效创作优质内容。素材集市新增“一键三连”、“B站热梗”等热门素材，让你的视频瞬间引爆B站。告别枯燥乏味的剪辑过程，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%BF%85%E5%89%AA%EF%BC%8CUP%E4%B8%BB" class="tag">必剪，UP主</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="k0mmfxq3n.html">GeoGebra(数学软件) v6.0.898 多平台版</a></h2>
+        <div class="article-excerpt"><h1><b>GeoGebra v6.0.898：动态数学软件的多平台解决方案</b></h1><p><b>GeoGebra</b> 是一款强大的跨平台动态数学教学与绘图软件，完全免费。它融合了几何、代数和微积分的功能，为教育工作者和学生提供了一个强大的学习和探索工具。</p><p><b>GeoGe...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=GeoGebra%EF%BC%8C%E6%95%B0%E5%AD%A6%E8%BD%AF%E4%BB%B6" class="tag">GeoGebra，数学软件</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="kzq8.html">微软 Edge 浏览器迈步全流程自动化：跨标签页洞察，未来自动生成邮件和购物清单</a></h2>
+        <div class="article-excerpt"><h1><b>微软Edge浏览器：全流程自动化新纪元</b></h1></br><p>微软正积极探索Edge浏览器的全流程自动化，旨在提升用户体验和生产力。通过整合**工智能**技术，Edge有望实现跨标签页洞察，未来甚至能自动生成邮件和购物清单，为用户带来前所未有的便捷。</p><p><b>多标签...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Edge%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%8C%E8%87%AA%E5%8A%A8%E5%8C%96" class="tag">Edge浏览器，自动化</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="34uvubreot9b.html">MPV播放器 v20250826 官方版</a></h2>
+        <div class="article-excerpt"><h1>MPV播放器 v20250826 官方版</h1><p>mpv 是一款免费、开源、跨平台的多媒体播放器，支持 Windows、Linux、MacOS、BSD 及 Android 等系统。</p><p>mpv 拥有极简 GUI 界面和强大的命令行控制，兼容多种媒体文件格式、音视频编解码器及字幕...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=MPV" class="tag">MPV</a><a href="tags.html?tag=%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="73wpwy7.html">NipaPlay(视频播放器) v1.4.39 绿色版</a></h2>
+        <div class="article-excerpt"><h1>NipaPlay - 您的全平台视频娱乐中心</h1></br><p><b>NipaPlay</b> 是一款现代且强大的跨平台视频播放器，旨在为您提供卓越的观影体验。无论您使用的是 Windows、macOS、Linux、Android 还是 iOS 设备，NipaPlay 都能为您提供统一...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=NipaPlay%EF%BC%8C%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">NipaPlay，视频播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="vwq9bkah2en2.html">010Editor v16.0.1 汉化修改版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p><b>010 Editor v16.0.1</b> 是一款强大的专业文本和十六进制编辑器，旨在为用户提供简便快捷的文件内容编辑体验。无论是常见的文本文档，如 Unicode 文件、批处理脚本、C/C++ 源代码等，还是复杂的二进制文件，010...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=010Editor" class="tag">010Editor</a><a href="tags.html?tag=%E6%B1%89%E5%8C%96" class="tag">汉化</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="x0nnpqcjtvo.html">EF Commander(文件管理) v25.20 官方便携版</a></h2>
+        <div class="article-excerpt"><h1><b>EF Commander v25.20：强大便捷的双窗口文件管理器</b></h1><p>EF Commander 是一款专业的双窗口文件管理器，其直观的操作界面和强大的功能使其成为替代传统资源管理器的理想选择。本次发布的 v25.20 版本为官方便携版，无需安装，即下即用，方便用户在...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=EF%20Commander%EF%BC%8C%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86" class="tag">EF Commander，文件管理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2sfej.html">Duplicate Same Files Searcher(重复文件搜索) v10.7.0 便携版</a></h2>
+        <div class="article-excerpt"><h1><b>Duplicate Same Files Searcher v10.7.0 便携版：高效重复文件搜索与管理</b></h1><p>Duplicate Same Files Searcher是一款专业的重复文件查找与清理工具，旨在帮助用户快速、高效地管理和优化存储空间。v10.7.0便携...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%87%8D%E5%A4%8D%E6%96%87%E4%BB%B6%E6%90%9C%E7%B4%A2%EF%BC%8C%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86" class="tag">重复文件搜索，文件管理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="dvqorik.html">Fan Control(风扇控制工具) v234 绿色版</a></h2>
+        <div class="article-excerpt"><h1><b>Fan Control v234：终极风扇控制工具，守护您的电脑</b></h1></br><p>Fan Control 是一款强大的 Windows 风扇控制软件，专为电脑爱好者和游戏玩家设计。它体积小巧，界面友好，能够实时监控硬件温度，确保您的电脑始终处于最佳运行状态，有效保护硬件...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6%EF%BC%8C%E7%A1%AC%E4%BB%B6%E7%9B%91%E6%8E%A7" class="tag">风扇控制，硬件监控</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lefu6yr0i4.html">UltraSearch(搜索工具) v4.8.2.1182 便携版</a></h2>
+        <div class="article-excerpt"><h1>UltraSearch：极速文件搜索利器 v4.8.2.1182 便携版</h1><p>告别蜗牛般的搜索速度！<b>UltraSearch</b> 是一款专为提升文件查找效率而生的强大工具。无论您是在庞大的公司网络中，还是在个人电脑上，UltraSearch 都能以闪电般的速度，精准定位您所...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=UltraSearch%EF%BC%8C%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7" class="tag">UltraSearch，搜索工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="l38hqmmm1ood.html">BitComet (比特彗星) v2.16.8.23 绿色便携版</a></h2>
+        <div class="article-excerpt"><h1>BitComet (比特彗星) v2.16.8.23 绿色便携版</h1><p>BitComet(比特彗星)，一款完全免费的BitTorrent（BT）下载利器，亦是集BT/HTTP/FTP于一体的卓越下载管理器。凭借领先的BT下载技术，以及便捷友好的用户界面，BitComet深受用户喜爱。...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E6%AF%94%E7%89%B9%E5%BD%97%E6%98%9F" class="tag">比特彗星</a><a href="tags.html?tag=BT%E4%B8%8B%E8%BD%BD" class="tag">BT下载</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yl1d52xuyz9.html">微信PC v4.1.0.21 官方版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1><p><b>微信PC</b> 4.1.0.21版震撼来袭，同时支持Windows和macOS双端，带来更流畅、更便捷的沟通体验。告别覆盖安装的烦恼，<b>微信PC</b> 4.1.0.21版本与旧版本可以无缝共存，首次进入4.1.0.21版本时，系统将智能提...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%BE%AE%E4%BF%A1PC" class="tag">微信PC</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="owagot4bs.html">Android MX Player v1.98.5 去广告版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p><b>MX Video Player</b>视频播放器是一款安卓*优秀的媒体播放器软件，它能够播放几乎每一个影片档案，并且具备多核心的译码能力来处理你的影片档案和字幕。多核译码功能，它能够取得比单核译码播放器高达70%的效能。处理器优化，这款...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=MX%20Player" class="tag">MX Player</a><a href="tags.html?tag=%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">视频播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="pe2hf7kk5a9.html">Android ES文件管理器 v4.4.3.2 修改版</a></h2>
+        <div class="article-excerpt"><h1>Android ES文件管理器 v4.4.3.2 修改版</h1><p><b>ES文件浏览器</b> (ES File Explorer) 是一款强大的免费文件管理工具，适用于本地和网络文件管理，以及应用程序管理。兼容Android 2.0及以上版本。</p><p><b>主要功能：</b><...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8%EF%BC%8CAndroid" class="tag">文件管理器，Android</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8zda4ap.html">360安全浏览器 v16.1.2178.64 优化便携版</a></h2>
+        <div class="article-excerpt"><h1>360安全浏览器 v16.1.2178.64 优化便携版↓↓下载地址在最下面↓↓</h1></br><p>360安全浏览器便携版是一款免安装即用的版本，无需繁琐安装步骤，直接启动，体验360安全浏览器的强大功能。作为主流浏览器，它拥有简洁的界面和卓越的性能。新版本在标签页、内核和皮肤上进行了...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=360%E5%AE%89%E5%85%A8%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%8C%E4%BE%BF%E6%90%BA%E7%89%88" class="tag">360安全浏览器，便携版</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="q7c2xdc8am0.html">Android HttpCanary(抓包工具) v3.3.8 高级版</a></h2>
+        <div class="article-excerpt"><h1>Android HttpCanary v3.3.8 高级版 - 移动端网络抓包利器</h1><p>HttpCanary，一款专为 Android 平台打造的强大网络抓包与分析工具，堪称移动开发者的得力助手。它能够实时捕获并深入解析设备与服务器之间交互的各类网络流量，包括 HTTP、HTTPS...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=HttpCanary%EF%BC%8C%E6%8A%93%E5%8C%85" class="tag">HttpCanary，抓包</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="o6e1q.html">MeGUI v2.9.1.3 汉化版</a></h2>
+        <div class="article-excerpt"><h1>MeGUI v2.9.1.3 汉化版</h1></br><p>MeGUI 是一款开源、免费的视频转换与压制工具，主要运行在 Windows 系统上。它本身并不是单一的编码器，而是一个“前端”——把许多命令行工具（例如 x264、x265、FFmpeg、AviSynth 等）的复杂操作统一到一...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E8%A7%86%E9%A2%91%E8%BD%AC%E6%8D%A2%EF%BC%8CMeGUI" class="tag">视频转换，MeGUI</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qdejalbe.html">Super Productivity(任务管理软件) v14.3.4</a></h2>
+        <div class="article-excerpt"><h1>Super Productivity：高效任务管理，提升工作效率</h1><p>Super Productivity 是一款开源任务管理应用程序，旨在帮助用户高效管理日常工作计划，清晰掌握每日工作内容，显著提升工作效率。软件设置简洁，功能丰富，拥有诸多独特优势，是您提升生产力的得力助手。</...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%EF%BC%8C%E6%95%88%E7%8E%87" class="tag">任务管理，效率</a>
+            </div>
+        </div>
+    </div>
+</div> 占位符动态生成 -->
+        
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="826d8.html">Android Salt Player播放器 v10.9.0</a></h2>
+        <div class="article-excerpt"><h1>Android Salt Player播放器 v10.9.0</h1></br><p><b>Salt Player</b>（中文名：椒盐音乐）是一款强大的本地音乐播放器，它支持多种音频格式，并拥有美观的用户界面。软件能够根据专辑封面的色彩智能生成动态流光效果，并提供丰富的主题选择，满足个性化...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Salt%20Player" class="tag">Salt Player</a><a href="tags.html?tag=%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">音乐播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9hy0rpndq.html">Fort Firewall(防火墙工具) v3.19.3</a></h2>
+        <div class="article-excerpt"><h1>Fort Firewall v3.19.3：轻量级开源防火墙，全面保护你的网络安全</h1><p>告别臃肿繁琐的传统防火墙，拥抱轻巧高效的 Fort Firewall！这款开源免费的防火墙工具，以其小巧的体积和强大的功能，为你的电脑提供全方位的网络安全保护。</p><h2>核心功能</h2>...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%98%B2%E7%81%AB%E5%A2%99%EF%BC%8C%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8" class="tag">防火墙，网络安全</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="i35j.html">Cromite v139.0.7258.143 绿色版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p>Cromite是一款基于Bromite的Chromium浏览器分叉版本，专为增强<b>隐私保护</b>和<b>广告拦截</b>而设计。它不仅继承了Bromite的优秀特性，还进一步强化了隐私保护的功能，致力于为用户提供一个更加安全、纯净的浏览...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%9A%90%E7%A7%81%E4%BF%9D%E6%8A%A4%EF%BC%8C%E6%B5%8F%E8%A7%88%E5%99%A8" class="tag">隐私保护，浏览器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="j5sagfinm.html">Cherry Studio(模型服务聚合) v1.5.7</a></h2>
+        <div class="article-excerpt"><h1>Cherry Studio：AI模型服务聚合平台，打造智能工作流</h1><p><b>Cherry Studio</b> 是一款专为专业人士设计的桌面客户端，旨在聚合多种 <b>AI 模型服务</b>，提升工作效率。它内置了30多个行业的智能助手，支持Windows和macOS两大主流操作系...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Studio%EF%BC%8C%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1" class="tag">Studio，模型服务</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="tald4v.html">Calibre(阅读&转换)v8.9.0 官方版</a></h2>
+        <div class="article-excerpt"><h1>Calibre(阅读&转换)v8.9.0 官方版</h1><p><b>Calibre</b>是一款免费且强大的电子书管理工具，不仅提供阅读功能，还支持电子书制作与格式转换。中文版界面友好，操作简洁，无需复杂设置，打开即可使用。</p><p><b>Calibre中文版</b>的核心优势在于其全...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Calibre" class="tag">Calibre</a><a href="tags.html?tag=%E7%94%B5%E5%AD%90%E4%B9%A6" class="tag">电子书</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="hadmec.html">Android Rotation Pro(强制转屏) v28.8.0 高级版</a></h2>
+        <div class="article-excerpt"><h1>Android Rotation Pro：终极屏幕控制，尽享高级体验</h1><p>厌倦了手机屏幕一成不变的显示方式？<b>Android Rotation Pro</b> 让你彻底掌控屏幕方向，解锁前所未有的自定义体验。这款高级版本为你带来更强大的功能，更稳定的性能，让你在任何场景下都能获...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%B1%8F%E5%B9%95%E6%97%8B%E8%BD%AC%EF%BC%8CAndroid%E5%B7%A5%E5%85%B7" class="tag">屏幕旋转，Android工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="w2t7piu.html">Android XPlayer v2.4.7.6 修改版</a></h2>
+        <div class="article-excerpt"><h1><b>Android XPlayer v2.4.7.6 修改版</b></h1></br><p><b>XPlayer</b>，一款全能的安卓视频播放器，支持各种视频格式，包括MKV、MP4、AVI等。它支持4K超高清视频播放，提供流畅、清晰的观影体验。利用硬件加速技术，XPlayer能够更高...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=XPlayer%EF%BC%8C%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">XPlayer，视频播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="g9dlarncgb.html">Qmmp(开源音乐播放器) v2.2.8 便携版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p><b>Qmmp</b>，一款基于Qt框架打造的开源音乐播放器，以其轻量级、高度定制化和跨平台特性，在众多音乐发烧友中广受欢迎。它不仅继承了Winamp的经典界面风格，更在功能上进行了扩展和创新，为用户带来极致的音乐体验。</p><h3>功能特...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Qmmp%EF%BC%8C%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">Qmmp，音乐播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="znafjvlqd.html">周鸿祎飞起一脚 1.2米“小孩哥”机器人被踹倒后直接躺平</a></h2>
+        <div class="article-excerpt"><h1>周鸿祎“暴力测试”人形机器人，一脚KO“小孩哥”</h1><p>8月22日，360创始人周鸿祎一段“暴力测试”人形机器人的视频在网上引发热议。视频中，周鸿祎参观了松延动力公司，并与该公司研发的N2人形机器人进行互动。</p><p>令人惊讶的是，互动过程中，周鸿祎突然飞起一脚，直接踹向身高1....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%91%A8%E9%B8%BF%E7%A5%8E%EF%BC%8C%E6%9C%BA%E5%99%A8%E4%BA%BA" class="tag">周鸿祎，机器人</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2g9f11eneziq.html">EmEditor v25.3.0 绿色便携版</a></h2>
+        <div class="article-excerpt"><h1>EmEditor v25.3.0 绿色便携版</h1></br><p>探索强大的<b>EmEditor文本编辑器</b>，一款启动迅速、功能全面的文本处理利器。它完美替代Windows记事本，胜任各类文本编辑任务，特别是在代码编辑和开发方面表现卓越。EmEditor v25.3.0全面支持U...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=EmEditor" class="tag">EmEditor</a><a href="tags.html?tag=%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8" class="tag">文本编辑器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="emux.html">Adobe Photoshop 2025 v26.10.0.7 绿色版</a></h2>
+        <div class="article-excerpt"><h1>Adobe Photoshop 2025 v26.10.0.7 绿色版</h1><p>体验 Adobe Photoshop 2025 (26.10.0.7版)，这款于2024年发布的专业图像处理软件。Photoshop 2025 (PS2025) 是全球范围内广受欢迎的图像处理、照片编辑及设...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Photoshop" class="tag">Photoshop</a><a href="tags.html?tag=%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86" class="tag">图像处理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ahp54rb.html">Adobe Photoshop 2025 (26.10.0.7) 特别版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1><p>Adobe图像处理软件 Photoshop 2025 正式版 (26.0.0版) 于2024年10月发布。Adobe Photoshop 2025 (PS2025) 是一款全球流行的专业图像处理、照片和设计软件。Adobe Photoshop中文修改版...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Photoshop%EF%BC%8C%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86" class="tag">Photoshop，图像处理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="a7ah91.html">京东拼拼重返社区团购：多地门店扩张加速</a></h2>
+        <div class="article-excerpt"><h1><b>京东拼拼重返社区团购：多地门店扩张加速</b></h1><p><b>京东</b>再次发力社区团购市场，旗下<b>京东拼拼</b>已在多地开设门店，加速线下布局。</p><p>继今年 4 月在北京房山启动首店后，<b>京东拼拼</b>近日在北京相继落地多个门店。除北京外，<b>京东拼拼<...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%BA%AC%E4%B8%9C%E6%8B%BC%E6%8B%BC%EF%BC%8C%E7%A4%BE%E5%8C%BA%E5%9B%A2%E8%B4%AD" class="tag">京东拼拼，社区团购</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="c2gf.html">Waterfox(水狐浏览器) v6.6.1 官方版</a></h2>
+        <div class="article-excerpt"><h1>Waterfox(水狐浏览器) v6.6.1 官方版</h1><p><b>Waterfox</b>：一款源于 Firefox 开源项目的 64 位高性能浏览器，自 2011 年问世以来，便致力于为用户提供卓越的浏览体验。其核心目标是打造速度*敏*捷、安全可靠的 Web 资源管理器，充分释放 ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Waterfox%EF%BC%8C%E6%B5%8F%E8%A7%88%E5%99%A8" class="tag">Waterfox，浏览器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="mr0p.html">Visual Studio Code 1.103.2 官方版</a></h2>
+        <div class="article-excerpt"><h1>Visual Studio Code 1.103.2 官方版↓↓下载地址在最下面↓↓</h1></br><p>Visual Studio Code是由微软公司精心打造的一款免费、开源且跨平台的代码编辑器。它巧妙地融合了微软在线编辑器 Visual Studio Online（代号：Monac...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Visual%20Studio%20Code%EF%BC%8C%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8" class="tag">Visual Studio Code，代码编辑器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="k6uuiw7h9w.html">微软 Win95 发布 30 周年：是技术革命，也是流行文化爆款</a></h2>
+        <div class="article-excerpt"><h1><b>微软 Win95 发布 30 周年：技术革命与流行文化现象</b></h1><p>8 月 24 日，适逢微软 Windows 95 操作系统发布 30 周年。这款具有划时代意义的操作系统，不仅代表着一次重大的技术飞跃，更在全球范围内掀起了一场影响深远的流行文化浪潮。</p><p>在 W...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Win95%EF%BC%8C%E5%BE%AE%E8%BD%AF" class="tag">Win95，微软</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="0pzs8kjq6z.html">Readest(电子书阅读器) v0.9.75</a></h2>
+        <div class="article-excerpt"><h1>Readest v0.9.75：沉浸式开源电子书阅读器</h1><p>探索 Readest，一款为深度阅读而生的开源电子书阅读器。Readest 基于 Next.js 15 和 Tauri v2 框架重构 Foliate，旨在提供卓越的跨平台阅读体验。目前已支持 macOS、Windows、...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%98%85%E8%AF%BB%E5%99%A8%EF%BC%8C%E7%94%B5%E5%AD%90%E4%B9%A6" class="tag">阅读器，电子书</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8v8lhntavw.html">jarkViewer(看图工具) v1.28 绿色版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1><p>jarkViewer 是一款基于 OpenCV 和各大图像库开发的开源看图软件。它以其简洁易用的操作界面和强大的图像格式支持，深受用户喜爱。用户可以通过鼠标滚轮在窗口两侧边缘轻松切换图片，在窗口中间区域滚轮进行放大和缩小操作。双击屏幕即可进入全屏模式，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=jarkViewer" class="tag">jarkViewer</a><a href="tags.html?tag=%E7%9C%8B%E5%9B%BE%E8%BD%AF%E4%BB%B6" class="tag">看图软件</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="z0hv9z4430xp.html">BiliLive-tools(B站录播工具) v2.5.1 绿色版</a></h2>
+        <div class="article-excerpt"><h1>BiliLive-tools(B站录播工具) v2.5.1 绿色版</h1><p><b>BiliLive-tools</b>是一款专为B站设计的<b>一站式录播工具</b>，旨在简化和优化B站录播的整个流程。它集成了弹幕转换、视频压制和B站投稿等功能，并支持录播姬与blrec的webhook...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=B%E7%AB%99%E5%BD%95%E6%92%AD%EF%BC%8C%E8%A7%86%E9%A2%91%E5%B7%A5%E5%85%B7" class="tag">B站录播，视频工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zpg989dnfv.html">Android AfuseKt(网络视频播放器) v2.9.3</a></h2>
+        <div class="article-excerpt"><h1>AfuseKt：安卓*力网络视频播放器v2.9.3</h1><p>AfuseKt 是一款专为安卓平台打造的<b>多功能网络视频播放器</b>，版本升级至v2.9.3。旨在为用户提供卓越的媒体播放体验，并优化了在线视频资源的访问和管理。</p><h2>核心功能与特点</h2><ul>    <...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E7%BD%91%E7%BB%9C%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8%EF%BC%8C%E5%AE%89%E5%8D%93" class="tag">网络视频播放器，安卓</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2324aj42kti0.html">Android 小冰箱 v2.2.7</a></h2>
+        <div class="article-excerpt"><h1><b>Android食材管理神器：小冰箱 v2.2.7，告别过期烦恼！</b></h1><p>还在为冰箱里的食材过期而烦恼吗？<b>小冰箱 v2.2.7</b> 是一款专为Android用户设计的<b>简单易用</b>的食材记录APP，助你轻松管理冰箱，告别过期浪费！</p><p>只需简单几...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%A3%9F%E6%9D%90%E7%AE%A1%E7%90%86%EF%BC%8C%E5%86%B0%E7%AE%B1" class="tag">食材管理，冰箱</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="h9pgx3z.html">UniGetUI(下载工具) v3.3.2</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1>UniGetUI (原 WingetUI) 旨在为 Windows 10 和 Windows 11 上常见的命令行界面 (CLI) 包管理器，如 Winget、Scoop、Chocolatey、Pip、Npm 和 .NET Tool 创建一个图形用户界面 (...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7%EF%BC%8CWingetUI" class="tag">下载工具，WingetUI</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="sbrv0b2c2ntj.html">谷歌安卓 16 升级防盗：手机失窃后，对方有解锁密码也无法访问银行等敏感 App</a></h2>
+        <div class="article-excerpt"><h1><b>Android 16 防盗升级：解锁密码失效，保护银行 App 安全</b></h1><p>谷歌最新 Android 16 QPR2 Beta 1 更新推出“身份检查”（Identity Check）功能，旨在提升 Pixel 设备在失窃后的数据安全防护能力。</p><p>该功能的核心...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Android%EF%BC%8C%E9%98%B2%E7%9B%97" class="tag">Android，防盗</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="hc9arj4.html">Blossom(笔记软件) v1.17.1</a></h2>
+        <div class="article-excerpt"><h1>Blossom：你的私有云端双链笔记与动态博客</h1><p><b>Blossom</b> v1.17.1 是一款强大的云端双链笔记软件，专为追求数据安全和知识高效管理的用户打造。它支持私有部署，让你可以完全掌控你的数据，告别隐私泄露的风险。你可以将你的珍贵笔记、个人照片和周详的计划安排安全...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E7%AC%94%E8%AE%B0%EF%BC%8C%E5%8F%8C%E9%93%BE" class="tag">笔记，双链</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="7c1exq.html">CopyQ(剪贴板增强工具) v11.0.0 官方便携版</a></h2>
+        <div class="article-excerpt"><h1>CopyQ - 强大剪贴板增强工具 v11.0.0 官方便携版</h1><p>CopyQ 是一款开源且使用 QT 框架编写的剪切板管理利器，为用户提供卓越的剪贴板管理体验。它不仅支持搜索、编辑历史等基础功能，更具备一系列高级特性，例如支持存储和处理包括图片在内的多种数据格式，以及灵活的命令行...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=CopyQ%EF%BC%8C%E5%89%AA%E8%B4%B4%E6%9D%BF%E5%B7%A5%E5%85%B7" class="tag">CopyQ，剪贴板工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="c78wi.html">哔哩哔哩PC客户端 v1.17.1.4420</a></h2>
+        <div class="article-excerpt"><h1>哔哩哔哩PC客户端 v1.17.1.4420</h1><p>哔哩哔哩官方PC客户端，带来更流畅、更丰富的二次元娱乐体验。告别UWP版本，全新32位客户端，兼容各类Windows系统。探索无尽动漫、游戏、影视内容，与百万UP主互动，发现你的兴趣所在。</p><h2>软件特性</h2><ul> ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%EF%BC%8CPC%E5%AE%A2%E6%88%B7%E7%AB%AF" class="tag">哔哩哔哩，PC客户端</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zaajcm.html">苹果首款折叠 iPhone 曝料：配自研 C2 基带芯片、调整屏幕方案减少折痕、Touch ID 指纹识别、无 SIM 卡槽</a></h2>
+        <div class="article-excerpt"><h1><b>苹果折叠 iPhone 震撼曝料：自研 C2 基带、无痕屏幕、Touch ID 加持！</b></h1></br><p>备受瞩目的苹果首款折叠屏 iPhone (暂称 iPhone Fold) 终于迎来重磅消息！ 彭博社知名记者马克・古尔曼爆料，这款划时代的产品预计将于 2026 年问...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=iPhone%20Fold%EF%BC%8CC2%E5%9F%BA%E5%B8%A6" class="tag">iPhone Fold，C2基带</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="px0c6pq3dvpi.html">QOwnNotes(开源Markdown笔记本) v25.8.7 绿色版</a></h2>
+        <div class="article-excerpt"><h1><b>QOwnNotes：开源Markdown笔记本，极致自由的纯文本笔记体验</b></h1><p>QOwnNotes是一款强大的开源记事本，专为追求极致自由和灵活性的用户设计。它完美支持 Markdown 语法，并提供针对GNU / Linux, Mac OS X和Windows的全平台...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Markdown%EF%BC%8C%E7%AC%94%E8%AE%B0" class="tag">Markdown，笔记</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fwxyiqge.html">Twinkle Tray(多屏亮度调节工具) v1.17.0 官方中文版</a></h2>
+        <div class="article-excerpt"><h1>Twinkle Tray：多屏亮度调节的终极解决方案</h1><p>告别繁琐的屏幕亮度调节！<b>Twinkle Tray v1.17.0 官方中文版</b>，为您带来前所未有的便捷体验。这款强大的亮度调节工具，旨在简化多显示器环境下的亮度管理，让您轻松掌控每个屏幕的亮度，提高工作效率，保护...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%BA%AE%E5%BA%A6%E8%B0%83%E8%8A%82%EF%BC%8C%E5%A4%9A%E5%B1%8F" class="tag">亮度调节，多屏</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="e1t6994.html">Koodo Reader(跨平台电子书阅读器) v2.1.2</a></h2>
+        <div class="article-excerpt"><h1><b>Koodo Reader：跨平台电子书阅读的全新体验</b></h1><p>Koodo Reader 是一款卓越的跨平台电子书阅读器，旨在为用户提供无缝且个性化的阅读体验。它支持多种操作系统，包括 Windows、macOS、Linux 和网页版，无论您身在何处，都可以随时随地沉浸在书...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E7%94%B5%E5%AD%90%E4%B9%A6%E9%98%85%E8%AF%BB%E5%99%A8%EF%BC%8CKoodo%20Reader" class="tag">电子书阅读器，Koodo Reader</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lw7pbinp7x6y.html">XiaoYao_快速跳转 v4.4.6 绿色版</a></h2>
+        <div class="article-excerpt"><h1>XiaoYao_快速跳转 v4.4.6 绿色版 - 文件管理器增强利器</h1><p><b>XiaoYao_快速跳转</b>是一款由国内开发者打造的Windows系统效率提升工具，专注于解决文件操作中的路径跳转痛点。它能够智能识别并一键跳转至当前资源管理器、Total Commander、D...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%BF%AB%E9%80%9F%E8%B7%B3%E8%BD%AC" class="tag">快速跳转</a><a href="tags.html?tag=%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8" class="tag">文件管理器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="btql.html">File Commander(文件指挥官)v6.6.34940高级破解版</a></h2>
+        <div class="article-excerpt"><h1>File Commander(文件指挥官)v6.6.34940高级破解版</h1></br><p>文件指挥官是一款功能全面且强大的文件管理器，旨在助您轻松掌控Android设备及云存储中的各类文件。它以简洁直观的界面，让您能够高效管理图片、音乐、视频、文档等不同类型的媒体库。只需轻点几下，即...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E6%96%87%E4%BB%B6%E6%8C%87%E6%8C%A5%E5%AE%98%EF%BC%8C%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8" class="tag">文件指挥官，文件管理器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="uldda3ehwkff.html">必剪 v3.10.4 官方版</a></h2>
+        <div class="article-excerpt"><h1>必剪 v3.10.4 官方版</h1><p><b>为UP主而生的必剪PC端，迎来v3.10.4官方版更新！</b>本次更新重点强化素材集市功能，集成更多B站特色元素，助力UP主高效创作优质内容。素材集市新增“一键三连”、“B站热梗”等热门素材，让你的视频瞬间引爆B站。告别枯燥乏味的剪辑过程，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%BF%85%E5%89%AA%EF%BC%8CUP%E4%B8%BB" class="tag">必剪，UP主</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="k0mmfxq3n.html">GeoGebra(数学软件) v6.0.898 多平台版</a></h2>
+        <div class="article-excerpt"><h1><b>GeoGebra v6.0.898：动态数学软件的多平台解决方案</b></h1><p><b>GeoGebra</b> 是一款强大的跨平台动态数学教学与绘图软件，完全免费。它融合了几何、代数和微积分的功能，为教育工作者和学生提供了一个强大的学习和探索工具。</p><p><b>GeoGe...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=GeoGebra%EF%BC%8C%E6%95%B0%E5%AD%A6%E8%BD%AF%E4%BB%B6" class="tag">GeoGebra，数学软件</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="kzq8.html">微软 Edge 浏览器迈步全流程自动化：跨标签页洞察，未来自动生成邮件和购物清单</a></h2>
+        <div class="article-excerpt"><h1><b>微软Edge浏览器：全流程自动化新纪元</b></h1></br><p>微软正积极探索Edge浏览器的全流程自动化，旨在提升用户体验和生产力。通过整合**工智能**技术，Edge有望实现跨标签页洞察，未来甚至能自动生成邮件和购物清单，为用户带来前所未有的便捷。</p><p><b>多标签...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=Edge%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%8C%E8%87%AA%E5%8A%A8%E5%8C%96" class="tag">Edge浏览器，自动化</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="34uvubreot9b.html">MPV播放器 v20250826 官方版</a></h2>
+        <div class="article-excerpt"><h1>MPV播放器 v20250826 官方版</h1><p>mpv 是一款免费、开源、跨平台的多媒体播放器，支持 Windows、Linux、MacOS、BSD 及 Android 等系统。</p><p>mpv 拥有极简 GUI 界面和强大的命令行控制，兼容多种媒体文件格式、音视频编解码器及字幕...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=MPV" class="tag">MPV</a><a href="tags.html?tag=%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="73wpwy7.html">NipaPlay(视频播放器) v1.4.39 绿色版</a></h2>
+        <div class="article-excerpt"><h1>NipaPlay - 您的全平台视频娱乐中心</h1></br><p><b>NipaPlay</b> 是一款现代且强大的跨平台视频播放器，旨在为您提供卓越的观影体验。无论您使用的是 Windows、macOS、Linux、Android 还是 iOS 设备，NipaPlay 都能为您提供统一...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=NipaPlay%EF%BC%8C%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">NipaPlay，视频播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="vwq9bkah2en2.html">010Editor v16.0.1 汉化修改版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p><b>010 Editor v16.0.1</b> 是一款强大的专业文本和十六进制编辑器，旨在为用户提供简便快捷的文件内容编辑体验。无论是常见的文本文档，如 Unicode 文件、批处理脚本、C/C++ 源代码等，还是复杂的二进制文件，010...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=010Editor" class="tag">010Editor</a><a href="tags.html?tag=%E6%B1%89%E5%8C%96" class="tag">汉化</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="x0nnpqcjtvo.html">EF Commander(文件管理) v25.20 官方便携版</a></h2>
+        <div class="article-excerpt"><h1><b>EF Commander v25.20：强大便捷的双窗口文件管理器</b></h1><p>EF Commander 是一款专业的双窗口文件管理器，其直观的操作界面和强大的功能使其成为替代传统资源管理器的理想选择。本次发布的 v25.20 版本为官方便携版，无需安装，即下即用，方便用户在...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=EF%20Commander%EF%BC%8C%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86" class="tag">EF Commander，文件管理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2sfej.html">Duplicate Same Files Searcher(重复文件搜索) v10.7.0 便携版</a></h2>
+        <div class="article-excerpt"><h1><b>Duplicate Same Files Searcher v10.7.0 便携版：高效重复文件搜索与管理</b></h1><p>Duplicate Same Files Searcher是一款专业的重复文件查找与清理工具，旨在帮助用户快速、高效地管理和优化存储空间。v10.7.0便携...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%87%8D%E5%A4%8D%E6%96%87%E4%BB%B6%E6%90%9C%E7%B4%A2%EF%BC%8C%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86" class="tag">重复文件搜索，文件管理</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="dvqorik.html">Fan Control(风扇控制工具) v234 绿色版</a></h2>
+        <div class="article-excerpt"><h1><b>Fan Control v234：终极风扇控制工具，守护您的电脑</b></h1></br><p>Fan Control 是一款强大的 Windows 风扇控制软件，专为电脑爱好者和游戏玩家设计。它体积小巧，界面友好，能够实时监控硬件温度，确保您的电脑始终处于最佳运行状态，有效保护硬件...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E9%A3%8E%E6%89%87%E6%8E%A7%E5%88%B6%EF%BC%8C%E7%A1%AC%E4%BB%B6%E7%9B%91%E6%8E%A7" class="tag">风扇控制，硬件监控</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lefu6yr0i4.html">UltraSearch(搜索工具) v4.8.2.1182 便携版</a></h2>
+        <div class="article-excerpt"><h1>UltraSearch：极速文件搜索利器 v4.8.2.1182 便携版</h1><p>告别蜗牛般的搜索速度！<b>UltraSearch</b> 是一款专为提升文件查找效率而生的强大工具。无论您是在庞大的公司网络中，还是在个人电脑上，UltraSearch 都能以闪电般的速度，精准定位您所...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=UltraSearch%EF%BC%8C%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7" class="tag">UltraSearch，搜索工具</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="l38hqmmm1ood.html">BitComet (比特彗星) v2.16.8.23 绿色便携版</a></h2>
+        <div class="article-excerpt"><h1>BitComet (比特彗星) v2.16.8.23 绿色便携版</h1><p>BitComet(比特彗星)，一款完全免费的BitTorrent（BT）下载利器，亦是集BT/HTTP/FTP于一体的卓越下载管理器。凭借领先的BT下载技术，以及便捷友好的用户界面，BitComet深受用户喜爱。...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E6%AF%94%E7%89%B9%E5%BD%97%E6%98%9F" class="tag">比特彗星</a><a href="tags.html?tag=BT%E4%B8%8B%E8%BD%BD" class="tag">BT下载</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yl1d52xuyz9.html">微信PC v4.1.0.21 官方版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1><p><b>微信PC</b> 4.1.0.21版震撼来袭，同时支持Windows和macOS双端，带来更流畅、更便捷的沟通体验。告别覆盖安装的烦恼，<b>微信PC</b> 4.1.0.21版本与旧版本可以无缝共存，首次进入4.1.0.21版本时，系统将智能提...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E5%BE%AE%E4%BF%A1PC" class="tag">微信PC</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="owagot4bs.html">Android MX Player v1.98.5 去广告版</a></h2>
+        <div class="article-excerpt"><h1>↓↓下载地址在最下面↓↓</h1></br><p><b>MX Video Player</b>视频播放器是一款安卓*优秀的媒体播放器软件，它能够播放几乎每一个影片档案，并且具备多核心的译码能力来处理你的影片档案和字幕。多核译码功能，它能够取得比单核译码播放器高达70%的效能。处理器优化，这款...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=MX%20Player" class="tag">MX Player</a><a href="tags.html?tag=%E8%A7%86%E9%A2%91%E6%92%AD%E6%94%BE%E5%99%A8" class="tag">视频播放器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="pe2hf7kk5a9.html">Android ES文件管理器 v4.4.3.2 修改版</a></h2>
+        <div class="article-excerpt"><h1>Android ES文件管理器 v4.4.3.2 修改版</h1><p><b>ES文件浏览器</b> (ES File Explorer) 是一款强大的免费文件管理工具，适用于本地和网络文件管理，以及应用程序管理。兼容Android 2.0及以上版本。</p><p><b>主要功能：</b><...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8%EF%BC%8CAndroid" class="tag">文件管理器，Android</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8zda4ap.html">360安全浏览器 v16.1.2178.64 优化便携版</a></h2>
+        <div class="article-excerpt"><h1>360安全浏览器 v16.1.2178.64 优化便携版↓↓下载地址在最下面↓↓</h1></br><p>360安全浏览器便携版是一款免安装即用的版本，无需繁琐安装步骤，直接启动，体验360安全浏览器的强大功能。作为主流浏览器，它拥有简洁的界面和卓越的性能。新版本在标签页、内核和皮肤上进行了...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=360%E5%AE%89%E5%85%A8%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%8C%E4%BE%BF%E6%90%BA%E7%89%88" class="tag">360安全浏览器，便携版</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="q7c2xdc8am0.html">Android HttpCanary(抓包工具) v3.3.8 高级版</a></h2>
+        <div class="article-excerpt"><h1>Android HttpCanary v3.3.8 高级版 - 移动端网络抓包利器</h1><p>HttpCanary，一款专为 Android 平台打造的强大网络抓包与分析工具，堪称移动开发者的得力助手。它能够实时捕获并深入解析设备与服务器之间交互的各类网络流量，包括 HTTP、HTTPS...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=HttpCanary%EF%BC%8C%E6%8A%93%E5%8C%85" class="tag">HttpCanary，抓包</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="o6e1q.html">MeGUI v2.9.1.3 汉化版</a></h2>
+        <div class="article-excerpt"><h1>MeGUI v2.9.1.3 汉化版</h1></br><p>MeGUI 是一款开源、免费的视频转换与压制工具，主要运行在 Windows 系统上。它本身并不是单一的编码器，而是一个“前端”——把许多命令行工具（例如 x264、x265、FFmpeg、AviSynth 等）的复杂操作统一到一...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E8%A7%86%E9%A2%91%E8%BD%AC%E6%8D%A2%EF%BC%8CMeGUI" class="tag">视频转换，MeGUI</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qdejalbe.html">Super Productivity(任务管理软件) v14.3.4</a></h2>
+        <div class="article-excerpt"><h1>Super Productivity：高效任务管理，提升工作效率</h1><p>Super Productivity 是一款开源任务管理应用程序，旨在帮助用户高效管理日常工作计划，清晰掌握每日工作内容，显著提升工作效率。软件设置简洁，功能丰富，拥有诸多独特优势，是您提升生产力的得力助手。</...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tags.html?tag=%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%EF%BC%8C%E6%95%88%E7%8E%87" class="tag">任务管理，效率</a>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- 分页部分 - 使用动态生成的HTML -->
+    <div class="pagination">
+        <div class="pagination"><a href="posts_6.html">上一页</a><a href="posts.html">1</a><span>...</span><a href="posts_3.html">3</a><a href="posts_4.html">4</a><a href="posts_5.html">5</a><a href="posts_6.html">6</a><span class="current">7</span><a href="posts_8.html">下一页</a></div>
+    </div>
+    
+    <!-- 友情链接区域 -->
+    <div class="friendly-links">
+        <div class="container">
+            <h3 class="title">生活点滴好用</h3>
+            <ul>
+                <li><a href="http://www.weizhang8.cn/" rel="nofollow" target="_blank">违章查询</a></li>
+                <li><a href="https://www.didiglobal.com/" rel="nofollow" target="_blank">滴滴打车</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <h3 class="title">购物网址大全</h3>
+            <ul>
+                <li><a href="http://www.vip.com/" rel="nofollow" target="_blank">唯品会</a></li>
+                <li><a href="http://www.vmall.com/" rel="nofollow" target="_blank">华为商城</a></li>
+                <li><a href="http://www.tmall.com/" rel="nofollow" target="_blank">天猫商城</a></li>
+                <li><a href="https://www.amazon.cn/" rel="nofollow" target="_blank">亚马逊</a></li>
+                <li><a href="http://www.jd.com/" rel="nofollow" target="_blank">京东商城</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 小梦静态博客 | <a href="/sitemap3.xml" target="_blank">网站地图</a></p>
+    </div>
+</body>
+</html>
