@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表 - 小梦静态博客</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+            color: #444;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e0e8f5;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .article-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        .article-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .article-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .article-content {
+            padding: 25px;
+        }
+        .article-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .article-title a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .article-title a:hover {
+            color: #4a89dc;
+            text-decoration: underline;
+        }
+        .article-excerpt {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px dashed #eaeaea;
+            padding-top: 15px;
+        }
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background-color: #f0f5ff;
+            color: #4a89dc;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .tag:hover {
+            background-color: #4a89dc;
+            color: white;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 16px;
+            background: #f0f5ff;
+            color: #4a89dc;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #c0d0f0;
+            transition: all 0.3s ease;
+        }
+        .pagination a:hover {
+            background: #4a89dc;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(74, 137, 220, 0.5);
+        }
+        .pagination .current {
+            background: #4a89dc;
+            color: #fff;
+            font-weight: bold;
+        }
+        .pagination .disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            background: #f5f9ff;
+        }
+        @media (max-width: 600px) {
+            .pagination {
+                gap: 5px;
+            }
+            .pagination a, .pagination span {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 友情链接样式 */
+        .friendly-links {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #eaeaea;
+        }
+        .friendly-links .container {
+            margin-bottom: 30px;
+        }
+        .friendly-links .title {
+            font-size: 1.3rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .friendly-links ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .friendly-links li a {
+            display: block;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .friendly-links li a:hover {
+            background: #4a89dc;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin: 40px 0 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #4a89dc;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .article-item {
+                margin-bottom: 20px;
+            }
+            .article-content {
+                padding: 20px;
+            }
+            .article-title {
+                font-size: 1.3rem;
+            }
+            .article-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>文章列表</h1>
+        <p>探索我们的精选文章，发现知识与灵感</p>
+    </div>
+    
+    <div class="article-list">
+        <!-- 文章列表将由 
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="mj34rh51u69o.html">战锤40K：星际战士2/Warhammer 40,000: Space Marine 2 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍体验星际战士的超人技能和残暴手段。利用致命能力和毁灭性武器消灭无穷无尽的泰伦虫群。选择单人或多人模式，在恢弘的第三人称战斗中保卫帝国。版本介绍v7.2.0.1|容量74.3GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器下载地址：<span onclick="window.open('...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="baz7x.html">模拟农场25/Farming Simulator 25/模拟经营 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《Farming Simulator 25》邀请你加入回报丰厚的农场生活，无论你是独自游戏，还是多人合作，你都将打造属于你的农场！包含DLC• FS25 - New Holland CR11 Gold Edition (Farming Simulator 25 - New Holland C...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="esm84qn.html">幻想生活ｉ转圈圈的龙和偷取时间的少女角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍钓钓鱼，做做菜，建设建设岛屿，去广阔的大地图和伙伴们一起与怪物战斗……踏入这款慢生活角色扮演游戏的幻想世界，自由切换14种各有特色的职业，随心所欲地享受每一次冒险带来的惊喜吧！版本介绍v1.2.1|容量12.6GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器。下载地址：<span on...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="onpol.html">潜行者2：切尔诺贝利之心/S.T.A.L.K.E.R. 2: Heart of Chornobyl - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍前往广阔无垠的切尔诺贝利封锁区，与大量危险的敌人正面交锋，探寻众多致命的异常现象和强力的神器。揭开属于你的史诗篇章，闯入切尔诺贝利的核心地带。明智地选择你的发展轨迹，你的每次选择都将决定自身命运，并最终定格人类的未来。版本介绍v1.4.2|容量155GB|官方简体中文|支持键盘.鼠标.手柄|...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="c043b6ge.html">勇者斗恶龙3 HD-2D重制版/DRAGON QUEST - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍受广大游戏玩家喜爱的不朽经典作品《勇者斗恶龙III&emsp;传说的起点…》将以全新的画面表现技术重获新生。在融合像素图与3DCG的HD-2D优美世界中，踏上盛大的冒险吧！版本介绍v1.2.0.0|容量15.3GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="w...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qet171tk4.html">宗门志/Ascension修仙人的4X国风游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍一款属于修仙人的4X游戏。 宗门遭遇灭顶之灾，危难之际集全宗之力打开时空通道，传送年轻弟子以续道统。身为新任掌门的你，须带领众人重铸宗门，在这个崭新的世界当中，凝神魂、结金丹，化神登仙。版本介绍v0.11.55|容量5.31GB|官方简体中文|支持键盘.鼠标.手柄解压密码：XDGAME下载地...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="h7pf1.html">使命召唤18：先锋/Call of Duty: Vanguard 枪战射击 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《使命召唤&reg;：先锋》包含引人入胜的单人战役、拥有超过20张地图的多人游戏（其中16张专为标准多人游戏而设计），以及由Treyarch游戏工作室开发的令人兴奋的全新丧尸模式。启动说明《使命召唤：先锋》破解版（单人-多人-僵尸模式）首次运行时，以管理员身份运行install.bat（仅首...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="pgqa76r5f7w.html">装甲核心6：境界天火/机战佣兵6：境界天火 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《机战佣兵VI 境界天火》将以FromSoftware多年的机甲游戏技术为基础，结合坚实的游戏性提供给玩家FromSoftware近年动作游戏般的突破性游戏体验。中文设置LANGUAGE-TEXT-简体中文版本介绍v1.09.1|容量61.1GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="j13hzclw0.html">堕落之主/Lords of the Fallen/角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍见证广阔世界，一切尽在全新黑暗奇幻动作RPG，《堕落之主》。扮演传说中的黑暗远征军，踏上推翻邪神阿迪尔的史诗征程。包含DLC• Lords of the Fallen - Legendary Pack• Lords of the Fallen - Starting Boost• Lords ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lz6e1i0.html">超级马里奥兄弟：惊奇/Super Mario Bros Wonder - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍这是自2012年《新超级马里奥兄弟U》发布以来，大约11年来“超级马里奥兄弟”系列横向卷轴动作游戏中的第一款全新游戏。 马里奥和他的朋友们穿过敌人和障碍到达目标杆。版本介绍v1.0.1模拟器整合版|容量5.09GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="w...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="m8i358y.html">奇异人生：双重曝光/Life is Strange: Double Exposure - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍发现好友萨菲惨死雪地之中，麦珂茜·考尔菲德撕开了通往平行时空的大门。这边的萨菲还活着，而且也深陷险境！凭借穿梭两条时间线的新能力，麦珂茜能否理清真相，阻止同样的悲剧？版本介绍v1.1.1027899|容量22.9GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3n5lgg8.html">拳皇 WingEX1.2最新前瞻版经典怀旧游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">经典的怀旧游戏，想起之前游戏机对打的时候，感兴趣的可以下载玩玩。软件简介拳皇WingEX1.2前瞻版 是由民间爱好者大神（其前身闪翼工作室）结合拳皇等素材开发的格斗游戏，招式丰富，打斗精彩，喜欢此类的朋友可以试试拳皇Wing（E）也加入了非拳皇的角色：隆，春丽，御名方守失，霸土丸，胶。隆，春丽属CA...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="922g92.html">大宋英雄传/SongHeros/策略武侠游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍以宋朝为架空背景的策略武侠游戏，作为一个普通人进入江湖，体验生与死、善与恶，游历、结交、战斗、蜕变，获取资源，不断成长，针对敌人搭配技能，克敌制胜。每一次开始都是新的，做出不同选择，体验一段段史诗故事！版本介绍v1.0.0.250424|容量2.71GB|官方简体中文|支持键盘.鼠标下载地址...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="i0foia.html">巨人杀手：暗黑之潮/Jotunnslayer: Hordes of Hel - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍杀戮无尽敌潮，高举战斧直面命运的洗礼！在《巨人杀手：暗黑之潮》中，你将直面如潮水般的敌人，通过无尽的战斗锻造自身，赢得诸神的恩赐。摆脱凡人的束缚，化身为对抗巨人的不朽战士，在这片不屈的地底世界中书写属于你的辉煌传奇！版本介绍v0.4.0|容量12.8GB|官方简体中文|支持键盘.鼠标.手柄下...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lqmcig0.html">消逝的光芒2：人与仁之战/Dying Light 2 Stay Human - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍病毒获胜了，文明退回了黑暗时代。作为人类最后的堡垒之一，“都市”正处在崩溃的边缘。运用你的敏捷和战斗技巧活下去，并重塑这个世界。你的选择意义重大。包含DLC• Dying Light 2 - Deluxe Pack• Dying Light 2 - Ultimate pack• Dying ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="to3m24iuh.html">永恒空间2/EVERSPACE 2/动作冒险 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《EVERSPACE™ 2》是一款快节奏的单人太空射击游戏，融合了经典的RPG元素，具有高度探索性且提供大量战利品。在纯手工搭建的开放世界中体验惊险刺激的故事，探索无尽的奥秘，在成为人类的道路上克服艰难险阻。包含DLC• The Art of EVERSPACE 2• The EVERSPA...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="d2g0hg.html">光与影：33号远征队/Clair Obscur: Expedition 33 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍率领第33号远征队踏上消灭绘母的征途，竭尽全力夺下她绘就死亡的画刷。置身这款采用即时机制的回合制角色扮演游戏，探索奇妙世界，感受法兰西19世纪末“美好年代”时期的风采，对抗超乎想象的敌人。版本介绍v56442|容量41.7GB|官方简体中文|支持键盘.鼠标.手柄|赠原声音乐|赠多项修改器下载...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9xvg.html">往日不再/Days Gone动作冒险真实游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《往日不再》是由Bend Studio制作、索尼发行的一款末世风格的沙盒动作冒险游戏，故事设定在全球瘟疫爆发两年后，主角为流浪汉与赏金猎人迪肯圣约翰。游戏宗旨为表现人类绝境情况下的本能，如绝望、疯狂、背叛、友谊、爱以及为希望而战斗。包含DLCDays Gone - Broken Road D...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1az6pif0sn.html">侠盗猎车手5传承版/GTA5传承版/Grand Theft Auto V Legacy - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《侠盗猎车手5》简称《GTA5》（台版译作《横行霸道5》），是一款由Rockstar Games制作并发行的动作冒险游戏。游戏采用新版雷霆引擎（RAGE引擎），画面表现力异常强悍。游戏故事发生在以美国洛杉矶、南加州及其周...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="738nzn.html">星际拓荒/Outer Wilds/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">《星际拓荒》是一款开放世界冒险类游戏，游戏背景是困在无尽时间循环中的太阳系。玩家将在无限轮回中不断探索这片星系，每隔20分钟就会发生一次超新星爆炸，游戏中的场景会随时间和灾害而演变。玩家将追随外星留下的神秘信号，解开星系陷入无限轮回的原因。中文设置OPTIONS-TEXT/AUDIO-LANGUAG...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8s5icxj.html">冥界契约/Netherworld Covenant/动作冒险 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍一款黑暗奇幻题材的俯视角3D动作肉鸽游戏。在现世与异界交错的深渊中，驾驭冥灯之力，与已故战友的亡魂并肩作战。用冷兵器的锋芒与策略的肉鸽构筑，撕碎被诅咒的维度屏障，揭开血与魂交织的真相。版本介绍v0.6.9|容量3.73GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclic...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="asn4bd.html">痴情哥哥与病弱妹妹的乡间生活/Sickly Days and - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">这是一部有关痴情哥哥与病弱妹妹之间，陪伴与成长、守护与梦想的小小物语。 你将得以操控哥哥与妹妹对话，陪伴她，照顾她，回收与妹妹渡过的幸福生活的小小碎片。版本介绍Build.18927577|容量1.15GB|官方简体中文|支持键盘.鼠标下载地址：<span onclick="window.open(...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="w92fwluc49p.html">七龙珠 电光炸裂！ZERO/DRAGON BALL: Sparking! ZERO - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍“七龙珠 电光炸裂！ZERO”堂堂登场！本作超越“七龙珠Z 电光炸裂！”（即过去“七龙珠Z Sparking!”）到达新的境界。让你拥有毁灭性的力量，成为七龙珠史上最强的战士！包含DLC• DRAGON BALL: Sparking! ZERO Pre-Order Pack• DRAGON ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fgo1bgtwh.html">美女，请别影响我成仙&gt;角色扮演游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍修仙，还是羞仙？你，林凡，千年难遇的纯阳灵根拥有者，鹤幻宗唯一的男修，本该是修仙界的天选之子，直到你发现，真正的“渡劫”不是雷罚，而是和宗门小姐姐们的情有千千劫。 既要突破境界、御剑成仙；又要守护纯阳、把根留住！版本介绍Build.18933809|容量25.1GB|官方简体中文|支持键盘....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="emeg5fdzl.html">断箭/Broken Arrow/即时战略游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《Broken Arrow - 断箭》是一款大型现代战争实时战术游戏，融合了多兵种战争的复杂性与充满动作张力的实时战术玩法。版本介绍v1.0.7|容量89.5GB|官方简体中文|支持键盘.鼠标下载地址：<span onclick="window.open('https://pan.baidu...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="u3xq05jaaw0b.html">情感反诈模拟器《捞女游戏》互动游戏学习版 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">《情感反诈模拟器》（曾用名：《捞女游戏》，为香港导演胡耀辉执导、前方工作室制作发行的一款互动影视类游戏，于2025年6月19日在PC端Steam平台发售 [1]。在游戏中，玩家将扮演吴宇伦，作为一名反击捞女组织的“情感猎手”，深入“情感欺诈”组织核心，在欺骗与诱惑之间做出关键抉择。游戏包含472分钟...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2b436dnrr57.html">华夏山河/Chinese Frontiers/模拟经营游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">建造万里长城，带领你的村庄走向繁荣，在这款沉浸式建造与管理模拟游戏中，探索中世纪的中国，发展你的聚落，管理村民NPC，亲手建造宏伟奇观，你的每一个抉择，都将影响家园的命运，并在历史长河中留下不朽印记!版本介绍v1.0.0|容量26.1GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span on...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2cag.html">模拟人生4/The Sims 4/模拟经营游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《模拟人生4》是由Maxis/The Sims Studio联合制作，EA发行的一款模拟经营类游戏，是人气系列《模拟人生》的最新正统续作。游戏中玩家可以获得离线经验，打造个性化的世界，同时游戏将提供便捷的分享功能，把自己的模拟人生快速的分享给朋友。创造有着突出性格与鲜明外表的全新模拟市民。控...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="5deg.html">虐杀熔炉/KIBORG动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">在《虐杀熔炉》中，为了带领反抗军越狱，一场关乎自由的残酷搏杀即将打响！你准备好迎接血与火的洗礼了吗？拳拳到肉，火力全开。赛博义体，碾压一切！痛快淋漓的战斗体验，让你肾上腺素飙升！在这个残酷的世界里，只有鲜血才能换来自由！版本介绍v20250617|容量20.9GB|官方简体中文|支持键盘.鼠标.手柄...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1e7etj7.html">猛将三国/Three Kingdoms Mushouden国风 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">舞台为三国黄巾之乱前夕（公元182年），玩家既可扮演原创角色，也可扮演历史武将，在乱世降临之前努力的建立自己的军事势力和人脉。游戏中您既可以做一个四处游荡的独狼游侠，也可以利用自己的历史知识拉拢诸多名将为你所用。总之，在黄巾之乱来临前多多准备，更改后世的命运吧！版本介绍v1.1.1|容量3.88GB...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="jswjv.html">云族裔/inZOI/模拟经营游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍「每段人生都是一则故事。」通过控制并观察'Zois'，你可以创造出一段属于你的，独一无二的人生。 利用 inZOI 易用的工具，可以自定义角色，建造房屋，在沉浸式的模拟体验中，过上梦想中的生活，体验生活中那些丰富而细腻的情感吧！版本介绍v0.2.2|容量22.2GB|官方简体中文|支持键盘....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="p39i01uajk4.html">炼狱深渊/HELLBREAK枪战射击游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">在残酷的竞技场中为拯救灵魂免于诅咒而战，只有最强者才能存活下来。取悦地狱领主，赢得他们的青睐，解锁全新的武器、法术和祝福。投身于这款快节奏的 Roguelite 风格竞技场射击游戏，冲击最高分数。你能夺回自己的灵魂吗？版本介绍v1.0.0|容量6.46GB|官方简体中文|支持键盘.鼠标.手柄下载地址...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1zq5aignty.html">心之眼/MindsEye/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">MindsEye 心之眼 是一款剧情叙事驱动的惊悚风格单人动作冒险游戏，故事背景设定在近未来的虚构沙漠城市——红石城。游戏总监Leslie Benzies倾力打造，将顶尖的电影级过场动画、肾上腺素爆棚的载具驾驶体验以及爆炸性的战斗场面融合在游戏中。版本介绍v4658369|容量49.4GB|官方简体...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="4puve.html">多重人生/The Alters动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍体验一款牵动人心的科幻游戏，探索融合冒险、生存和基地建设的异星奇景。你将扮演扬·道尔斯基——某次不幸的太空探险事故唯一的幸存者，创造出不同版本的自己，逃离这个充满致命陷阱的星球，并与这支“非正规军”一起面对心灵深处的个人创伤。版本介绍v1.0.1.46|容量48.1GB|官方简体中文|支持键...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="owryg4p1k.html">漫漫长夜/The Long Dark/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《漫漫长夜》由游戏开发商Hinterland Studio制作的第一人称生存模拟游戏。这款游戏设计思维紧密，强调在安静但很漂亮的灾后环境中探索。包含DLC• The Long Dark: Tales from the F...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3b1y685dotd.html">爱情，死亡与比基尼/Love, Death &amp; Bikini - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">《爱情，死亡与比基尼》 是一款真人视频互动游戏。Thermae工作室拍摄制作的第10款真人视频互动游戏，故事紧接前作，玩家在请做coser的主人5的比赛结束后丧尸病毒爆发，女孩们纷纷来投奔你一起共同生存的故事。版本介绍v20250605|容量46.6GB|官方简体中文|支持键盘.鼠标.手柄下载地址：...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ptbsow7x5mcy.html">信长之野望･新生/信长之野望16/NOBUNAGA - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《信长之野望：新生》是一款战争类策略游戏，扮演战国大名，可以给予功臣们领地，获得领地的家臣会自行判断如何发展城下町及领地，并在发生武装冲突时率领军队出战。版本介绍v1.1.6|容量26.9GB|官方简体中文|支持键盘.鼠...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="6w9q6tc8.html">警区/The Precinct动作冒险刺激的追逐战 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍1983年，阿维诺市。帮派在街头横行无忌，主角父亲的死亡仍然疑点重重。在这款警察题材、霓虹黑色美学的沙盒动作游戏中，打击城市中的犯罪，揭开真相，在可破坏的环境中体验刺激的追逐战。版本介绍v1.6.18465|容量8.33GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span oncli...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="kitm7t.html">匹诺曹的谎言/Lies of P/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《Lies of P》是一款精彩刺激的魂类游戏，灵感源于《匹诺曹》的故事，风格颠覆原作，游戏设定在“美好时代”的暗黑优雅背景之下。包含DLC• Lies of P: Soundtrack• Lies of P: Pre-Order Bonus• Lies of P: Deluxe Upgra...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="sqf8xwbk8o.html">天国：拯救2/Kingdom Come: Deliverance II - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍走进 15 世纪的欧洲，体验丰富多彩的开放世界，畅玩这款精彩的叙事驱动型角色扮演游戏，开启究极中世纪冒险，扮演年轻的亨利，踏上一场史诗级的旅程。包含DLC• Kingdom Come: Deliverance II - The Lion's Crest• Kingdom Come: Deli...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fbwgai.html">机械战警：暴戾都市 未竟之事/RoboCop: Rogue City - - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍简体中文： Unfinished Business 是 RoboCop: Rogue City 的全新独立冒险。全能塔是他们的堡垒，暴力是他们的语言。在混乱中一路面对精英雇佣兵，登上塔顶，维护法律！中文设置OPTIONS-GAMEPLAY-Language-Chinese Simplifie...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="r1j8b.html">龙与地下城：无冬之夜2增强版/Dungeons Dragons - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍被遗忘的国度的命运掌握在你手中。重返无冬城，一切尽在《龙与地下城：无冬之夜2 增强版》中。版本介绍v1.110|容量37.3GB|官方原版英文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https://pan.baidu.com/share/ini...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yz65ie1.html">叛乱：沙漠风暴/Insurgency: Sandstorm枪战射击 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《叛乱：沙漠风暴》是一款由New World Interactive制作、Focus Home Interactive发行的第一人称射击游戏，游戏采用虚幻4引擎开发。游戏背景设定在中东地区，将包含四种游戏模式，分别是进攻...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="m35v8lfkja.html">恶意不息/No Rest for the Wicked/角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍由曾开发出《精灵与森林》和《精灵与萤火意志》等获奖作品的Moon Studios带来全新力作《No Rest for the Wicked》。这是一款直观震撼、操作细腻的动作角色扮演游戏，力图颠覆这一游戏类型。存档位置C:\Users\（你的电脑用户名）\AppData\LocalLow\M...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="gm7illf1h.html">艾尔登法环 黑夜君临/ELDEN RING NIGHTREIGN - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《艾尔登法环 黑夜君临》（ELDEN RING NIGHTREIGN）为基于《艾尔登法环》（ELDEN RING）的世界观， 重新构思游戏的核心设计，带给玩家全新体验的衍生作品。版本介绍v1.01.7|容量20.6GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器下载地址：<span o...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yo3shzr.html">宣誓高级版/Avowed Premium Edition/角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍欢迎来到盎然之地，这是一个充满危机和冒险的神秘岛屿。《Avowed》是黑曜石娱乐公司获奖团队推出的一款第一人称奇幻动作 RPG 游戏，游戏背景设定在《永恒之柱》系列游戏中首次向玩家介绍的虚构世界艾欧拉。游戏介绍欢迎来到盎然之地，这是一个充满危机和冒险的神秘岛屿。《Avowed》是黑曜石娱乐公...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="851kl8.html">甜心AI追捕计划/Love Chase/角色扮演游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">男主隋必安是一名调查员，接到了一项异常任务：调查六个甜心中谁是AI机器人，随着调查的深入，男主对调查对象逐渐产生了爱情。至此感情和职责开始产生冲突，他陷入了一个充满迷雾和危险的境地。这段既扣人心弦又充满科幻色彩的爱情故事，在追寻真相的同时，也会沉浸在与各个女孩之间爱情纠缠中。版本介绍Build.14...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3grtrgt02w1s.html">生化危机1：高清重制版/Resident Evil Biohazard - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍生存恐怖类型的游戏回归！这是重新制作的高清版Resident Evil。版本介绍Build.16494431|容量22.4GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https://pan.baidu.com/share/init...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="82bshf.html">祇：女神之道/Kunitsu-Gami: Path of the Goddess - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">一个新的“神”之传说 《Kunitsu-gami: Path of the Goddess》 是以独创的“日式”世界观 体会“动作与战略”乐趣的单人游玩神乐战略活剧版本介绍Build.19024694|容量22.4GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="win...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cj5dxnfkqmw.html">魔法门之英雄无敌：上古纪元/Heroes of Might - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《魔法门之英雄无敌：上古纪元》是官方前传，作为业界典范且广受好评的回合制策略游戏系列，这一次我们将回到它的起源中去。你可以独自或与好友一起探索地图，加入标志性战斗并取得胜利，在一个从未实现和平的大陆上建立太平盛世。版本介绍v0.40.07|容量4.23GB|官方简体中文|支持键盘.鼠标下载地...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div> 占位符动态生成 -->
+        
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="mj34rh51u69o.html">战锤40K：星际战士2/Warhammer 40,000: Space Marine 2 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍体验星际战士的超人技能和残暴手段。利用致命能力和毁灭性武器消灭无穷无尽的泰伦虫群。选择单人或多人模式，在恢弘的第三人称战斗中保卫帝国。版本介绍v7.2.0.1|容量74.3GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器下载地址：<span onclick="window.open('...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="baz7x.html">模拟农场25/Farming Simulator 25/模拟经营 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《Farming Simulator 25》邀请你加入回报丰厚的农场生活，无论你是独自游戏，还是多人合作，你都将打造属于你的农场！包含DLC• FS25 - New Holland CR11 Gold Edition (Farming Simulator 25 - New Holland C...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="esm84qn.html">幻想生活ｉ转圈圈的龙和偷取时间的少女角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍钓钓鱼，做做菜，建设建设岛屿，去广阔的大地图和伙伴们一起与怪物战斗……踏入这款慢生活角色扮演游戏的幻想世界，自由切换14种各有特色的职业，随心所欲地享受每一次冒险带来的惊喜吧！版本介绍v1.2.1|容量12.6GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器。下载地址：<span on...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="onpol.html">潜行者2：切尔诺贝利之心/S.T.A.L.K.E.R. 2: Heart of Chornobyl - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍前往广阔无垠的切尔诺贝利封锁区，与大量危险的敌人正面交锋，探寻众多致命的异常现象和强力的神器。揭开属于你的史诗篇章，闯入切尔诺贝利的核心地带。明智地选择你的发展轨迹，你的每次选择都将决定自身命运，并最终定格人类的未来。版本介绍v1.4.2|容量155GB|官方简体中文|支持键盘.鼠标.手柄|...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="c043b6ge.html">勇者斗恶龙3 HD-2D重制版/DRAGON QUEST - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍受广大游戏玩家喜爱的不朽经典作品《勇者斗恶龙III&emsp;传说的起点…》将以全新的画面表现技术重获新生。在融合像素图与3DCG的HD-2D优美世界中，踏上盛大的冒险吧！版本介绍v1.2.0.0|容量15.3GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="w...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qet171tk4.html">宗门志/Ascension修仙人的4X国风游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍一款属于修仙人的4X游戏。 宗门遭遇灭顶之灾，危难之际集全宗之力打开时空通道，传送年轻弟子以续道统。身为新任掌门的你，须带领众人重铸宗门，在这个崭新的世界当中，凝神魂、结金丹，化神登仙。版本介绍v0.11.55|容量5.31GB|官方简体中文|支持键盘.鼠标.手柄解压密码：XDGAME下载地...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="h7pf1.html">使命召唤18：先锋/Call of Duty: Vanguard 枪战射击 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《使命召唤&reg;：先锋》包含引人入胜的单人战役、拥有超过20张地图的多人游戏（其中16张专为标准多人游戏而设计），以及由Treyarch游戏工作室开发的令人兴奋的全新丧尸模式。启动说明《使命召唤：先锋》破解版（单人-多人-僵尸模式）首次运行时，以管理员身份运行install.bat（仅首...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="pgqa76r5f7w.html">装甲核心6：境界天火/机战佣兵6：境界天火 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《机战佣兵VI 境界天火》将以FromSoftware多年的机甲游戏技术为基础，结合坚实的游戏性提供给玩家FromSoftware近年动作游戏般的突破性游戏体验。中文设置LANGUAGE-TEXT-简体中文版本介绍v1.09.1|容量61.1GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="j13hzclw0.html">堕落之主/Lords of the Fallen/角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍见证广阔世界，一切尽在全新黑暗奇幻动作RPG，《堕落之主》。扮演传说中的黑暗远征军，踏上推翻邪神阿迪尔的史诗征程。包含DLC• Lords of the Fallen - Legendary Pack• Lords of the Fallen - Starting Boost• Lords ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lz6e1i0.html">超级马里奥兄弟：惊奇/Super Mario Bros Wonder - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍这是自2012年《新超级马里奥兄弟U》发布以来，大约11年来“超级马里奥兄弟”系列横向卷轴动作游戏中的第一款全新游戏。 马里奥和他的朋友们穿过敌人和障碍到达目标杆。版本介绍v1.0.1模拟器整合版|容量5.09GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="w...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="m8i358y.html">奇异人生：双重曝光/Life is Strange: Double Exposure - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍发现好友萨菲惨死雪地之中，麦珂茜·考尔菲德撕开了通往平行时空的大门。这边的萨菲还活着，而且也深陷险境！凭借穿梭两条时间线的新能力，麦珂茜能否理清真相，阻止同样的悲剧？版本介绍v1.1.1027899|容量22.9GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3n5lgg8.html">拳皇 WingEX1.2最新前瞻版经典怀旧游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">经典的怀旧游戏，想起之前游戏机对打的时候，感兴趣的可以下载玩玩。软件简介拳皇WingEX1.2前瞻版 是由民间爱好者大神（其前身闪翼工作室）结合拳皇等素材开发的格斗游戏，招式丰富，打斗精彩，喜欢此类的朋友可以试试拳皇Wing（E）也加入了非拳皇的角色：隆，春丽，御名方守失，霸土丸，胶。隆，春丽属CA...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="922g92.html">大宋英雄传/SongHeros/策略武侠游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍以宋朝为架空背景的策略武侠游戏，作为一个普通人进入江湖，体验生与死、善与恶，游历、结交、战斗、蜕变，获取资源，不断成长，针对敌人搭配技能，克敌制胜。每一次开始都是新的，做出不同选择，体验一段段史诗故事！版本介绍v1.0.0.250424|容量2.71GB|官方简体中文|支持键盘.鼠标下载地址...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="i0foia.html">巨人杀手：暗黑之潮/Jotunnslayer: Hordes of Hel - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍杀戮无尽敌潮，高举战斧直面命运的洗礼！在《巨人杀手：暗黑之潮》中，你将直面如潮水般的敌人，通过无尽的战斗锻造自身，赢得诸神的恩赐。摆脱凡人的束缚，化身为对抗巨人的不朽战士，在这片不屈的地底世界中书写属于你的辉煌传奇！版本介绍v0.4.0|容量12.8GB|官方简体中文|支持键盘.鼠标.手柄下...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="lqmcig0.html">消逝的光芒2：人与仁之战/Dying Light 2 Stay Human - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍病毒获胜了，文明退回了黑暗时代。作为人类最后的堡垒之一，“都市”正处在崩溃的边缘。运用你的敏捷和战斗技巧活下去，并重塑这个世界。你的选择意义重大。包含DLC• Dying Light 2 - Deluxe Pack• Dying Light 2 - Ultimate pack• Dying ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="to3m24iuh.html">永恒空间2/EVERSPACE 2/动作冒险 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《EVERSPACE™ 2》是一款快节奏的单人太空射击游戏，融合了经典的RPG元素，具有高度探索性且提供大量战利品。在纯手工搭建的开放世界中体验惊险刺激的故事，探索无尽的奥秘，在成为人类的道路上克服艰难险阻。包含DLC• The Art of EVERSPACE 2• The EVERSPA...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="d2g0hg.html">光与影：33号远征队/Clair Obscur: Expedition 33 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍率领第33号远征队踏上消灭绘母的征途，竭尽全力夺下她绘就死亡的画刷。置身这款采用即时机制的回合制角色扮演游戏，探索奇妙世界，感受法兰西19世纪末“美好年代”时期的风采，对抗超乎想象的敌人。版本介绍v56442|容量41.7GB|官方简体中文|支持键盘.鼠标.手柄|赠原声音乐|赠多项修改器下载...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9xvg.html">往日不再/Days Gone动作冒险真实游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《往日不再》是由Bend Studio制作、索尼发行的一款末世风格的沙盒动作冒险游戏，故事设定在全球瘟疫爆发两年后，主角为流浪汉与赏金猎人迪肯圣约翰。游戏宗旨为表现人类绝境情况下的本能，如绝望、疯狂、背叛、友谊、爱以及为希望而战斗。包含DLCDays Gone - Broken Road D...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1az6pif0sn.html">侠盗猎车手5传承版/GTA5传承版/Grand Theft Auto V Legacy - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《侠盗猎车手5》简称《GTA5》（台版译作《横行霸道5》），是一款由Rockstar Games制作并发行的动作冒险游戏。游戏采用新版雷霆引擎（RAGE引擎），画面表现力异常强悍。游戏故事发生在以美国洛杉矶、南加州及其周...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="738nzn.html">星际拓荒/Outer Wilds/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">《星际拓荒》是一款开放世界冒险类游戏，游戏背景是困在无尽时间循环中的太阳系。玩家将在无限轮回中不断探索这片星系，每隔20分钟就会发生一次超新星爆炸，游戏中的场景会随时间和灾害而演变。玩家将追随外星留下的神秘信号，解开星系陷入无限轮回的原因。中文设置OPTIONS-TEXT/AUDIO-LANGUAG...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8s5icxj.html">冥界契约/Netherworld Covenant/动作冒险 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍一款黑暗奇幻题材的俯视角3D动作肉鸽游戏。在现世与异界交错的深渊中，驾驭冥灯之力，与已故战友的亡魂并肩作战。用冷兵器的锋芒与策略的肉鸽构筑，撕碎被诅咒的维度屏障，揭开血与魂交织的真相。版本介绍v0.6.9|容量3.73GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclic...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="asn4bd.html">痴情哥哥与病弱妹妹的乡间生活/Sickly Days and - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">这是一部有关痴情哥哥与病弱妹妹之间，陪伴与成长、守护与梦想的小小物语。 你将得以操控哥哥与妹妹对话，陪伴她，照顾她，回收与妹妹渡过的幸福生活的小小碎片。版本介绍Build.18927577|容量1.15GB|官方简体中文|支持键盘.鼠标下载地址：<span onclick="window.open(...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="w92fwluc49p.html">七龙珠 电光炸裂！ZERO/DRAGON BALL: Sparking! ZERO - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍“七龙珠 电光炸裂！ZERO”堂堂登场！本作超越“七龙珠Z 电光炸裂！”（即过去“七龙珠Z Sparking!”）到达新的境界。让你拥有毁灭性的力量，成为七龙珠史上最强的战士！包含DLC• DRAGON BALL: Sparking! ZERO Pre-Order Pack• DRAGON ...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fgo1bgtwh.html">美女，请别影响我成仙&gt;角色扮演游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍修仙，还是羞仙？你，林凡，千年难遇的纯阳灵根拥有者，鹤幻宗唯一的男修，本该是修仙界的天选之子，直到你发现，真正的“渡劫”不是雷罚，而是和宗门小姐姐们的情有千千劫。 既要突破境界、御剑成仙；又要守护纯阳、把根留住！版本介绍Build.18933809|容量25.1GB|官方简体中文|支持键盘....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="emeg5fdzl.html">断箭/Broken Arrow/即时战略游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《Broken Arrow - 断箭》是一款大型现代战争实时战术游戏，融合了多兵种战争的复杂性与充满动作张力的实时战术玩法。版本介绍v1.0.7|容量89.5GB|官方简体中文|支持键盘.鼠标下载地址：<span onclick="window.open('https://pan.baidu...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="u3xq05jaaw0b.html">情感反诈模拟器《捞女游戏》互动游戏学习版 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">《情感反诈模拟器》（曾用名：《捞女游戏》，为香港导演胡耀辉执导、前方工作室制作发行的一款互动影视类游戏，于2025年6月19日在PC端Steam平台发售 [1]。在游戏中，玩家将扮演吴宇伦，作为一名反击捞女组织的“情感猎手”，深入“情感欺诈”组织核心，在欺骗与诱惑之间做出关键抉择。游戏包含472分钟...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2b436dnrr57.html">华夏山河/Chinese Frontiers/模拟经营游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">建造万里长城，带领你的村庄走向繁荣，在这款沉浸式建造与管理模拟游戏中，探索中世纪的中国，发展你的聚落，管理村民NPC，亲手建造宏伟奇观，你的每一个抉择，都将影响家园的命运，并在历史长河中留下不朽印记!版本介绍v1.0.0|容量26.1GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span on...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2cag.html">模拟人生4/The Sims 4/模拟经营游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《模拟人生4》是由Maxis/The Sims Studio联合制作，EA发行的一款模拟经营类游戏，是人气系列《模拟人生》的最新正统续作。游戏中玩家可以获得离线经验，打造个性化的世界，同时游戏将提供便捷的分享功能，把自己的模拟人生快速的分享给朋友。创造有着突出性格与鲜明外表的全新模拟市民。控...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="5deg.html">虐杀熔炉/KIBORG动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">在《虐杀熔炉》中，为了带领反抗军越狱，一场关乎自由的残酷搏杀即将打响！你准备好迎接血与火的洗礼了吗？拳拳到肉，火力全开。赛博义体，碾压一切！痛快淋漓的战斗体验，让你肾上腺素飙升！在这个残酷的世界里，只有鲜血才能换来自由！版本介绍v20250617|容量20.9GB|官方简体中文|支持键盘.鼠标.手柄...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1e7etj7.html">猛将三国/Three Kingdoms Mushouden国风 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">舞台为三国黄巾之乱前夕（公元182年），玩家既可扮演原创角色，也可扮演历史武将，在乱世降临之前努力的建立自己的军事势力和人脉。游戏中您既可以做一个四处游荡的独狼游侠，也可以利用自己的历史知识拉拢诸多名将为你所用。总之，在黄巾之乱来临前多多准备，更改后世的命运吧！版本介绍v1.1.1|容量3.88GB...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="jswjv.html">云族裔/inZOI/模拟经营游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍「每段人生都是一则故事。」通过控制并观察'Zois'，你可以创造出一段属于你的，独一无二的人生。 利用 inZOI 易用的工具，可以自定义角色，建造房屋，在沉浸式的模拟体验中，过上梦想中的生活，体验生活中那些丰富而细腻的情感吧！版本介绍v0.2.2|容量22.2GB|官方简体中文|支持键盘....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="p39i01uajk4.html">炼狱深渊/HELLBREAK枪战射击游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">在残酷的竞技场中为拯救灵魂免于诅咒而战，只有最强者才能存活下来。取悦地狱领主，赢得他们的青睐，解锁全新的武器、法术和祝福。投身于这款快节奏的 Roguelite 风格竞技场射击游戏，冲击最高分数。你能夺回自己的灵魂吗？版本介绍v1.0.0|容量6.46GB|官方简体中文|支持键盘.鼠标.手柄下载地址...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1zq5aignty.html">心之眼/MindsEye/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">MindsEye 心之眼 是一款剧情叙事驱动的惊悚风格单人动作冒险游戏，故事背景设定在近未来的虚构沙漠城市——红石城。游戏总监Leslie Benzies倾力打造，将顶尖的电影级过场动画、肾上腺素爆棚的载具驾驶体验以及爆炸性的战斗场面融合在游戏中。版本介绍v4658369|容量49.4GB|官方简体...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="4puve.html">多重人生/The Alters动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍体验一款牵动人心的科幻游戏，探索融合冒险、生存和基地建设的异星奇景。你将扮演扬·道尔斯基——某次不幸的太空探险事故唯一的幸存者，创造出不同版本的自己，逃离这个充满致命陷阱的星球，并与这支“非正规军”一起面对心灵深处的个人创伤。版本介绍v1.0.1.46|容量48.1GB|官方简体中文|支持键...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="owryg4p1k.html">漫漫长夜/The Long Dark/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《漫漫长夜》由游戏开发商Hinterland Studio制作的第一人称生存模拟游戏。这款游戏设计思维紧密，强调在安静但很漂亮的灾后环境中探索。包含DLC• The Long Dark: Tales from the F...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3b1y685dotd.html">爱情，死亡与比基尼/Love, Death &amp; Bikini - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">《爱情，死亡与比基尼》 是一款真人视频互动游戏。Thermae工作室拍摄制作的第10款真人视频互动游戏，故事紧接前作，玩家在请做coser的主人5的比赛结束后丧尸病毒爆发，女孩们纷纷来投奔你一起共同生存的故事。版本介绍v20250605|容量46.6GB|官方简体中文|支持键盘.鼠标.手柄下载地址：...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ptbsow7x5mcy.html">信长之野望･新生/信长之野望16/NOBUNAGA - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《信长之野望：新生》是一款战争类策略游戏，扮演战国大名，可以给予功臣们领地，获得领地的家臣会自行判断如何发展城下町及领地，并在发生武装冲突时率领军队出战。版本介绍v1.1.6|容量26.9GB|官方简体中文|支持键盘.鼠...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="6w9q6tc8.html">警区/The Precinct动作冒险刺激的追逐战 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍1983年，阿维诺市。帮派在街头横行无忌，主角父亲的死亡仍然疑点重重。在这款警察题材、霓虹黑色美学的沙盒动作游戏中，打击城市中的犯罪，揭开真相，在可破坏的环境中体验刺激的追逐战。版本介绍v1.6.18465|容量8.33GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span oncli...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="kitm7t.html">匹诺曹的谎言/Lies of P/动作冒险游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《Lies of P》是一款精彩刺激的魂类游戏，灵感源于《匹诺曹》的故事，风格颠覆原作，游戏设定在“美好时代”的暗黑优雅背景之下。包含DLC• Lies of P: Soundtrack• Lies of P: Pre-Order Bonus• Lies of P: Deluxe Upgra...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="sqf8xwbk8o.html">天国：拯救2/Kingdom Come: Deliverance II - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍走进 15 世纪的欧洲，体验丰富多彩的开放世界，畅玩这款精彩的叙事驱动型角色扮演游戏，开启究极中世纪冒险，扮演年轻的亨利，踏上一场史诗级的旅程。包含DLC• Kingdom Come: Deliverance II - The Lion's Crest• Kingdom Come: Deli...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fbwgai.html">机械战警：暴戾都市 未竟之事/RoboCop: Rogue City - - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍简体中文： Unfinished Business 是 RoboCop: Rogue City 的全新独立冒险。全能塔是他们的堡垒，暴力是他们的语言。在混乱中一路面对精英雇佣兵，登上塔顶，维护法律！中文设置OPTIONS-GAMEPLAY-Language-Chinese Simplifie...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="r1j8b.html">龙与地下城：无冬之夜2增强版/Dungeons Dragons - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍被遗忘的国度的命运掌握在你手中。重返无冬城，一切尽在《龙与地下城：无冬之夜2 增强版》中。版本介绍v1.110|容量37.3GB|官方原版英文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https://pan.baidu.com/share/ini...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yz65ie1.html">叛乱：沙漠风暴/Insurgency: Sandstorm枪战射击 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《叛乱：沙漠风暴》是一款由New World Interactive制作、Focus Home Interactive发行的第一人称射击游戏，游戏采用虚幻4引擎开发。游戏背景设定在中东地区，将包含四种游戏模式，分别是进攻...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="m35v8lfkja.html">恶意不息/No Rest for the Wicked/角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍由曾开发出《精灵与森林》和《精灵与萤火意志》等获奖作品的Moon Studios带来全新力作《No Rest for the Wicked》。这是一款直观震撼、操作细腻的动作角色扮演游戏，力图颠覆这一游戏类型。存档位置C:\Users\（你的电脑用户名）\AppData\LocalLow\M...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="gm7illf1h.html">艾尔登法环 黑夜君临/ELDEN RING NIGHTREIGN - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《艾尔登法环 黑夜君临》（ELDEN RING NIGHTREIGN）为基于《艾尔登法环》（ELDEN RING）的世界观， 重新构思游戏的核心设计，带给玩家全新体验的衍生作品。版本介绍v1.01.7|容量20.6GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器下载地址：<span o...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yo3shzr.html">宣誓高级版/Avowed Premium Edition/角色扮演 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍欢迎来到盎然之地，这是一个充满危机和冒险的神秘岛屿。《Avowed》是黑曜石娱乐公司获奖团队推出的一款第一人称奇幻动作 RPG 游戏，游戏背景设定在《永恒之柱》系列游戏中首次向玩家介绍的虚构世界艾欧拉。游戏介绍欢迎来到盎然之地，这是一个充满危机和冒险的神秘岛屿。《Avowed》是黑曜石娱乐公...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="851kl8.html">甜心AI追捕计划/Love Chase/角色扮演游戏 - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">男主隋必安是一名调查员，接到了一项异常任务：调查六个甜心中谁是AI机器人，随着调查的深入，男主对调查对象逐渐产生了爱情。至此感情和职责开始产生冲突，他陷入了一个充满迷雾和危险的境地。这段既扣人心弦又充满科幻色彩的爱情故事，在追寻真相的同时，也会沉浸在与各个女孩之间爱情纠缠中。版本介绍Build.14...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3grtrgt02w1s.html">生化危机1：高清重制版/Resident Evil Biohazard - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍生存恐怖类型的游戏回归！这是重新制作的高清版Resident Evil。版本介绍Build.16494431|容量22.4GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https://pan.baidu.com/share/init...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="82bshf.html">祇：女神之道/Kunitsu-Gami: Path of the Goddess - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">一个新的“神”之传说 《Kunitsu-gami: Path of the Goddess》 是以独创的“日式”世界观 体会“动作与战略”乐趣的单人游玩神乐战略活剧版本介绍Build.19024694|容量22.4GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="win...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cj5dxnfkqmw.html">魔法门之英雄无敌：上古纪元/Heroes of Might - 678辅助网_专注免费软件,资源教程,游戏辅助资源网_我爱辅助网</a></h2>
+        <div class="article-excerpt">游戏介绍《魔法门之英雄无敌：上古纪元》是官方前传，作为业界典范且广受好评的回合制策略游戏系列，这一次我们将回到它的起源中去。你可以独自或与好友一起探索地图，加入标志性战斗并取得胜利，在一个从未实现和平的大陆上建立太平盛世。版本介绍v0.40.07|容量4.23GB|官方简体中文|支持键盘.鼠标下载地...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- 分页部分 - 使用动态生成的HTML -->
+    <div class="pagination">
+        <div class="pagination"><span class="disabled">上一页</span><span class="current">9</span><a href="posts_10.html">10</a><a href="posts_10.html">下一页</a></div>
+    </div>
+    
+    <!-- 友情链接区域 -->
+    <div class="friendly-links">
+        <div class="container">
+            <h3 class="title">生活点滴好用</h3>
+            <ul>
+                <li><a href="http://www.weizhang8.cn/" rel="nofollow" target="_blank">违章查询</a></li>
+                <li><a href="https://www.didiglobal.com/" rel="nofollow" target="_blank">滴滴打车</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <h3 class="title">购物网址大全</h3>
+            <ul>
+                <li><a href="http://www.vip.com/" rel="nofollow" target="_blank">唯品会</a></li>
+                <li><a href="http://www.vmall.com/" rel="nofollow" target="_blank">华为商城</a></li>
+                <li><a href="http://www.tmall.com/" rel="nofollow" target="_blank">天猫商城</a></li>
+                <li><a href="https://www.amazon.cn/" rel="nofollow" target="_blank">亚马逊</a></li>
+                <li><a href="http://www.jd.com/" rel="nofollow" target="_blank">京东商城</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 小梦静态博客 | <a href="/sitemap4.xml" target="_blank">网站地图</a></p>
+    </div>
+</body>
+</html>
