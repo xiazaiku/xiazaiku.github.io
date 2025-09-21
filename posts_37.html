@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源列表 - 纯净下载库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+            color: #444;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e0e8f5;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .article-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        .article-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .article-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .article-content {
+            padding: 25px;
+        }
+        .article-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .article-title a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .article-title a:hover {
+            color: #4a89dc;
+            text-decoration: underline;
+        }
+        .article-excerpt {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px dashed #eaeaea;
+            padding-top: 15px;
+        }
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background-color: #f0f5ff;
+            color: #4a89dc;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .tag:hover {
+            background-color: #4a89dc;
+            color: white;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 16px;
+            background: #f0f5ff;
+            color: #4a89dc;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #c0d0f0;
+            transition: all 0.3s ease;
+        }
+        .pagination a:hover {
+            background: #4a89dc;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(74, 137, 220, 0.5);
+        }
+        .pagination .current {
+            background: #4a89dc;
+            color: #fff;
+            font-weight: bold;
+        }
+        .pagination .disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            background: #f5f9ff;
+        }
+        @media (max-width: 600px) {
+            .pagination {
+                gap: 5px;
+            }
+            .pagination a, .pagination span {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 友情链接样式 */
+        .friendly-links {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #eaeaea;
+        }
+        .friendly-links .container {
+            margin-bottom: 30px;
+        }
+        .friendly-links .title {
+            font-size: 1.3rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .friendly-links ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .friendly-links li a {
+            display: block;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .friendly-links li a:hover {
+            background: #4a89dc;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin: 40px 0 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #4a89dc;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .article-item {
+                margin-bottom: 20px;
+            }
+            .article-content {
+                padding: 20px;
+            }
+            .article-title {
+                font-size: 1.3rem;
+            }
+            .article-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>文章列表</h1>
+        <p>探索我们的精选文章，发现知识与灵感</p>
+    </div>
+    
+    <div class="article-list">
+        <!-- 文章列表将由 
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2ob1ga8xui.html">凯恩的遗产：噬魂者 1&2 重制版</a></h2>
+        <div class="article-excerpt"><p><h1><b>《凯恩的遗产：噬魂者》重制版：黑暗宿命的史诗回归</b></h1></p><p>在永恒的命运漩涡中，光与暗的交织，背叛与救赎的纠葛，构成了《凯恩的遗产：噬魂者》系列的核心。如今，这部黑暗奇幻史诗以重制之姿，再次降临。它不仅仅是一次简单的画面升级，更是一次对经典灵魂的深度挖掘，将凯...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%99%AC%E9%AD%82%E8%80%85" class="tag">噬魂者</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="i95l.html">Funko Fusion一场动作冒险游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>Funko Fusion：一场跨界狂欢的动作冒险之旅</b></h1></p><p>准备好迎接一场前所未有的粉丝盛宴了吗？《Funko Fusion》将你最爱的系列作品中的标志性世界和角色汇聚一堂，以4人合作的模式，展开一场惊险刺激的动作冒险。10:10 Games以其天马行空的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=Funko" class="tag">Funko</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="a04iedktc.html">战斗天赋/Battle Talent/支持网络联机/支持VR</a></h2>
+        <div class="article-excerpt"><h1><b>沉浸式VR格斗体验：《战斗天赋》联机版强势来袭</b></h1><p>准备好进入一个充满挑战和刺激的虚拟现实格斗世界了吗？《战斗天赋》(Battle Talent) 是一款融合了先进物理引擎和深度格斗机制的VR游戏，现在，它带来了激动人心的联机功能，让你可以与朋友们一起磨练战斗技巧，共...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=VR%E6%A0%BC%E6%96%97" class="tag">VR格斗</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="xajdhyrli.html">师父数字豪华版/Sifu Digital Deluxe Edition</a></h2>
+        <div class="article-excerpt"><h1><b>《师父》数字豪华版：以武复仇，燃魂动作体验</b></h1><p>《师父》是一款由Sloclap倾力打造的第三人称武术动作游戏。它不仅仅是一款游戏，更是一场关于复仇、成长与自我救赎的武道修行。数字豪华版将带您更深入地体验这场充满挑战与荣耀的复仇之旅。</p><p>您将扮演一位身怀绝技的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%B8%88%E7%88%B6" class="tag">师父</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="whde.html">跨西伯利亚铁路模拟器/Trans-Siberian Railway</a></h2>
+        <div class="article-excerpt"><p><h1><b>跨西伯利亚铁路模拟器：一场真实的生存之旅</b></h1></p><p>准备好踏上世界上最长的铁路，体验在严酷的西伯利亚荒野中驾驶经典俄式火车头的刺激与挑战吗？《跨西伯利亚铁路模拟器》将带你进入一个充满危险与未知的世界，在这里，生存将是你唯一的法则。</p><p><b>真实的铁路...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%A8%A1%E6%8B%9F%E5%99%A8" class="tag">模拟器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="kpr5t01u3nag.html">战国王朝/Sengoku Dynasty/模拟经营</a></h2>
+        <div class="article-excerpt">```html<h1><b>战国王朝：在动荡的封建日本建立你的王朝</b></h1><p>《战国王朝》(Sengoku Dynasty) 是一款深度融合了开放世界角色扮演、城市建造、生活模拟和生存元素的史诗级游戏。玩家将置身于动荡不安的封建日本，体验从一介草民到建立并统治自己王朝的传奇历程。无论是独...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%88%98%E5%9B%BD%E7%8E%8B%E6%9C%9D" class="tag">战国王朝</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="eojwar0.html">蠕行的恐惧：深海的威胁</a></h2>
+        <div class="article-excerpt"><p><b>深海的威胁</b>，一个名字就足以让人感到寒意。</p><p>我抵达印斯茅斯的第十天，这座小镇弥漫着一种令人窒息的压抑感。居民的行为举止透着诡异，他们目光呆滞，面容僵硬，仿佛灵魂被某种无形的力量所操控。交谈中，他们时常会突然跪倒在地，口中念念有词，那些古老的祷告词充满了对克苏鲁和古神的赞...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%85%8B%E8%8B%8F%E9%B2%81" class="tag">克苏鲁</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="74as.html">Vampire Hunters：枪火炼狱</a></h2>
+        <div class="article-excerpt"><h1><b>Vampire Hunters：枪火炼狱</b></h1><p>深入黑暗，化身终极<b>吸血鬼猎人</b>。在这个充满动作与冒险的 Roguelite FPS 游戏中，你将面对无尽的嗜血怪物，而生存的关键在于你那逐渐壮大的武器库。</p><p>你的任务很简单：猎杀吸血鬼。但要做到这一点...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%90%B8%E8%A1%80%E9%AC%BC%E7%8C%8E%E4%BA%BA" class="tag">吸血鬼猎人</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="uuimgap7ks.html">地狱种子：全章节</a></h2>
+        <div class="article-excerpt"><p><h1><b>《地狱种子：全章节》：黑暗深渊的完整探索</b></h1></p><p>准备好迎接终极的恐怖体验吗？《地狱种子：全章节》将带您深入一个令人毛骨悚然、充满悬疑和未知恐惧的世界。这款游戏不仅仅是一场生存之旅，更是一次对人类精神极限的考验。每一次选择，每一个脚步，都可能决定您的命运，也...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%9C%B0%E7%8B%B1%E7%A7%8D%E5%AD%90" class="tag">地狱种子</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fhm0md.html">死亡急速66/DeathSprint 66/体育竞速游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>《DEATHSPRINT 66》：一场速度与死亡的华丽竞速</b></h1></p><p>准备好迎接《DEATHSPRINT 66》带来的肾上腺素激增的体验吧！这款体育竞速游戏将高速跑酷的刺激感、致命障碍的挑战以及残酷技能的策略运用完美融合，打造了一场前所未有的竞技盛宴。在这里，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%AB%9E%E9%80%9F%E6%B8%B8%E6%88%8F" class="tag">竞速游戏</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zg8lmfn3te.html">找个班上：轮滑青年的职场狂飙</a></h2>
+        <div class="article-excerpt"><p><b>《找个班上：轮滑青年的职场狂飙》</b>是一款独具特色的动作冒险游戏，将速度、技巧与职场挑战巧妙融合。你将扮演一位身着轮滑鞋、行动如风的年轻人，在竞争激烈的企业环境中，用你的轮滑技巧，一路过关斩将，最终找到属于自己的位置。</p><p>游戏中，你将面临各种各样的职场挑战，例如：</p><...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E8%BD%AE%E6%BB%91" class="tag">轮滑</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="iyfcuxp6vhfw.html">东京巫女：幸存者/W.A.N.D. Project/动作冒险</a></h2>
+        <div class="article-excerpt"><p><h1><b>化身东京巫女，守护崩坏边缘的都市</b></h1></p><p>东京，这座曾经繁华的都市，如今正面临着前所未有的危机。异象丛生，邪恶势力蠢蠢欲动，城市的安危岌岌可危。玩家将扮演一位肩负重任的巫女，挺身而出，守护这片土地，成为最后的幸存者。</p><p><h1><b>W.A.N.D...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E4%B8%9C%E4%BA%AC%E5%B7%AB%E5%A5%B3" class="tag">东京巫女</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="uavcv3i0w.html">无声的恐惧：森林18分钟</a></h2>
+        <div class="article-excerpt"><h1>无声的恐惧：森林18分钟</h1><p>进入《无声的恐惧：森林18分钟》，一款由两位独立开发者倾力打造的**恐怖**短篇游戏。游戏引擎采用最先进的虚幻引擎5，旨在为玩家带来前所未有的沉浸式恐惧体验。</p><p><b>挑战：</b>在寂静的森林中，你必须坚持18分钟，唯一的要求是——不要尖叫...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%81%90%E6%80%96%E6%B8%B8%E6%88%8F" class="tag">恐怖游戏</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="xmyo.html">瞄准实验室/专业练枪软件/Aimlabs/Aim Lab</a></h2>
+        <div class="article-excerpt"><h1><b>Aim Lab：提升射击精准度的专业训练平台</b></h1><p>Aim Lab 是一款备受全球射击游戏玩家推崇的专业练枪软件。无论您是电竞选手，还是想要提升游戏技巧的业余爱好者，Aim Lab 都能为您提供个性化的训练方案，助您快速提高射击水平。</p><p>Aim Lab 并非简...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=Aim%20Lab" class="tag">Aim Lab</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="exnjz017f.html">异次元心动指令：幻想少女的进击</a></h2>
+        <div class="article-excerpt"><h1><b>异次元心动指令：幻想少女的进击</b></h1><p>准备好迎接一场来自异次元的心动风暴了吗？《异次元心动指令：幻想少女的进击》将带你进入一个前所未有的幻想世界，在这里，你将扮演一位肩负重任的救世主，与多位风格迥异的韩国异次元美少女邂逅，展开一段充满爱与冒险的奇幻之旅。</p><p>这...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%BC%82%E6%AC%A1%E5%85%83" class="tag">异次元</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9e19ggy7j.html">传奇重装步兵/Legendary Hoplite/动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>传奇重装步兵：希腊神话中的史诗防御</b></h1><p>在《传奇重装步兵》(Legendary Hoplite)中，你将化身古希腊的指挥官，肩负起抵御神话怪物和古代部落入侵的重任，守护人类文明的火种。这是一款融合了紧张刺激的动作RPG元素与策略塔防机制的游戏，你需要在战场上浴血奋战，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%87%8D%E8%A3%85%E6%AD%A5%E5%85%B5" class="tag">重装步兵</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="owadr686.html">神之亵渎2/Blasphemous 2/动作冒险</a></h2>
+        <div class="article-excerpt"><p><h1><b>神之亵渎2：在苦难中挣扎的救赎之旅</b></h1></p><p>在《神之亵渎2》(Blasphemous 2)中，标志性的“悔罪者一号”再度觉醒，他将再次踏上无尽的征程，直面那神秘莫测的“奇迹”。这是一个充满未知的险恶世界，无数的谜团和秘密等待着被揭开，而玩家将扮演“悔罪者一号...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%A5%9E%E4%B9%8B%E4%BA%B5%E6%B8%8E2" class="tag">神之亵渎2</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="0mg5qqen28.html">战争游戏：红龙/Wargame/支持网络联机/即时战略</a></h2>
+        <div class="article-excerpt">```html<h1><b>战争游戏：红龙 - 亚洲战场上的史诗对决</b></h1><p><b>《战争游戏：红龙》</b>，Eugen Systems倾力打造，Focus Home InTeractive荣耀发行的《战争游戏》系列第三部作品，将即时战略的舞台从欧洲转移至充满变数的亚洲，开启一场跨越...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%88%98%E4%BA%89%E6%B8%B8%E6%88%8F%EF%BC%9A%E7%BA%A2%E9%BE%99" class="tag">战争游戏：红龙</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="llyj7383wu.html">妹相随黑白世界的缤纷冒险～/Living With Sister</a></h2>
+        <div class="article-excerpt"><p><b>《妹相随：黑白世界的缤纷冒险》</b>是一款引人入胜的角色扮演游戏，故事发生在一个色彩被剥夺的奇幻世界中。玩家将扮演一位立志成为伟大冒险者的年轻人，与自己的妹妹一同踏上旅程，用爱与勇气，为这个单调的世界重新找回失去的色彩。</p><p>在这个世界里，曾经鲜艳夺目的颜色逐渐褪去，留下的只有...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%86%92%E9%99%A9" class="tag">冒险</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="eyfn9.html">我靠双修拯救世界/Couple-Cultivation Saves the World</a></h2>
+        <div class="article-excerpt"><h1><b>《双修救世录》：一场跨越时空的修行之旅</b></h1><p>《双修救世录》(Couple-Cultivation Saves the World)是一款沉浸式真人互动影游，玩家将以第一人称视角扮演身负异能的男主角，意外发现自家传承的神秘功法，竟能帮助异世界的少女们精进修为。你，作为九...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%8F%8C%E4%BF%AE" class="tag">双修</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cbo7l8yp.html">拜托！请你先告白式真人恋爱模拟游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>《告白预演：恋爱模拟》—— 开启你的专属恋爱剧本</b></h1></p><p>你是否渴望一段充满甜蜜与悸动的恋爱？是否幻想过在不同类型的女孩中做出选择，体验截然不同的情感旅程？《告白预演：恋爱模拟》将满足你的一切想象。这是一款第一人称视角的沉浸式真人恋爱模拟游戏，你将化身男主角...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%81%8B%E7%88%B1%E6%A8%A1%E6%8B%9F" class="tag">恋爱模拟</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9npb6l.html">雷纳提斯/REYNATIS/角色扮演游戏</a></h2>
+        <div class="article-excerpt"><p><h1>涉谷异闻：雷纳提斯 (REYNATIS) 的魔法交织之旅</h1></p><p>欢迎来到现代东京涉谷，一个隐藏着魔法秘密的繁华都市。《雷纳提斯 (REYNATIS)》将带您进入一个魔法与现实交织的世界，您将扮演雾积真凛，一个渴望自由的年轻人，踏入这个充满神秘与机遇的城市。同时，您也将体...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%9B%B7%E7%BA%B3%E6%8F%90%E6%96%AF" class="tag">雷纳提斯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ue2vxg5.html">阿西！我的合租生活竟是后宫剧？/Five Hearts Under One Roof</a></h2>
+        <div class="article-excerpt"><p><h1>合租物语：当五个女孩住进我的家</h1></p><p>吴宥万，一个*丝单身青年，一直过着平静而略显单调的生活。一则“租客招募”的广告，彻底打破了他的日常。谁能想到，接下来的日子，竟然会变成一场啼笑皆非的恋爱喜剧？</p><p><b>五个性格迥异的美少女，怀揣着各自的故事，陆续住进了他的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%90%88%E7%A7%9F%EF%BC%8C%E6%81%8B%E7%88%B1%EF%BC%8C%E5%89%A7%E6%83%85" class="tag">合租，恋爱，剧情</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="19nvftfbc.html">圣女之歌ZERO 2：鳞痕誓约</a></h2>
+        <div class="article-excerpt"><h1><b>圣女之歌ZERO 2：鳞痕誓约</b></h1><p>在末日轮回的阴影下，双子圣女的命运交织，一场关于罪与救赎的史诗即将展开。《圣女之歌ZERO 2：鳞痕誓约》以其引人入胜的剧情和革新的战斗系统，带领玩家步入一个充满奇幻与感动的冒险世界。夏玛，一位背负着罪痕的少女，她的笑容背后隐藏着无...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%B3%9E%E7%97%95%E8%AA%93%E7%BA%A6" class="tag">鳞痕誓约</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8m9m20.html">恐怖黎明：终极版/Grim Dawn Definitive Edition</a></h2>
+        <div class="article-excerpt"><h1><b>《恐怖黎明：终极版》：在末世挣扎求生</b></h1><p>《恐怖黎明：终极版》是一款继承了《泰坦之旅》精神的暗黑ARPG，玩家将踏入饱受战火摧残的Cairn世界，体验在末世中挣扎求生的残酷与希望。曾经辉煌的帝国已经陨落，人类文明濒临崩溃，而你，将成为这片废墟中最后的希望。</p><p...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%81%90%E6%80%96%E9%BB%8E%E6%98%8E" class="tag">恐怖黎明</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="l2s0e9qfnm87.html">金刚：绝境求生</a></h2>
+        <div class="article-excerpt"><p><h1><b>金刚：绝境求生 - 泰坦战场上的生存史诗</b></h1></p><p>当泰坦巨兽的怒火点燃城市，生存便成为唯一的法则。在《金刚：绝境求生》中，你将扮演传奇巨兽金刚，置身于《哥斯拉大战金刚》事件之后满目疮痍的世界，为了生存而战，为了守护而战。</p><p>这场惊心动魄的动作冒险将...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%87%91%E5%88%9A" class="tag">金刚</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qnq80d1.html">阿喀琉斯：不为人知的传奇/Achilles: Legends Untold</a></h2>
+        <div class="article-excerpt"><p><h1><b>阿喀琉斯：不为人知的传奇</b></h1></p><p>在《阿喀琉斯：不为人知的传奇》中，你将扮演这位希腊神话中的英雄，体验一场史诗般的冒险。这款类似魂系列的动作角色扮演游戏，将你带入一个充满神话生物和神祇冲突的世界，你必须结束哈迪斯与阿瑞斯之间的无尽纷争，恢复奥林匹斯山的秩序。...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%98%BF%E5%96%80%E7%90%89%E6%96%AF" class="tag">阿喀琉斯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="umj3pjjw4v8.html">毁了的护士/Ruined Nurse/恐怖惊悚游戏</a></h2>
+        <div class="article-excerpt"><p><b>《毁了的护士》</b>：一场噩梦般的医院惊悚之旅</p><h1>深入黑暗：游戏背景</h1><p>你将步入一家被黑暗笼罩的医院，这里曾经是救死扶伤的圣地，如今却成为了滋生恐惧的温床。作为一名身陷囹圄的受害者，你必须揭开隐藏在这家医院背后的邪恶秘密，并找到逃脱的唯一出路。曾经的护士，如今却...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%8A%A4%E5%A3%AB" class="tag">护士</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="q7x2mm2.html">最后的低语/Last Whisper/动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>最后的低语：在末日中挣扎求生</b></h1><p>《最后的低语》(Last Whisper)是一款沉浸式的合作僵尸生存游戏，设定在一个广阔且危机四伏的开放世界中。玩家将扮演末世幸存者，面对数量不断增长、变异的僵尸群，以及其他为了生存而不择手段的幸存者。</p><p><b>探索与发现：...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%94%9F%E5%AD%98" class="tag">生存</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qpinp1ksvb.html">夜勤病栋/Night Shift Nurses/动作冒险</a></h2>
+        <div class="article-excerpt">```html<h1><b>夜勤病栋：午夜魅影下的禁忌之恋</b></h1><p>《夜勤病栋》（Night Shift Nurses）是一款融合了动作冒险元素的视觉小说，以其扣人心弦的剧情和引人入胜的角色设定，在游戏界独树一帜。本作最初于1999年推出，凭借其大胆的故事题材和精良的制作，迅速获得了大...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%A4%9C%E5%8B%A4%E7%97%85%E6%A0%8B" class="tag">夜勤病栋</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="p8kx2xjhf.html">阿加斯巴之塔/Towers of Aghasba动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>探索与建造：阿加斯巴之塔的奇幻冒险</b></h1><p>《阿加斯巴之塔》（Towers of Aghasba）是一款引人入胜的开放世界建造与冒险游戏，邀请玩家踏入一个充满奇幻色彩的岛屿世界。在这个世界里，玩家将扮演开拓者，从一片荒凉的土地开始，逐步建立起繁荣的文明，同时探索蕴藏其中的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%98%BF%E5%8A%A0%E6%96%AF%E5%B7%B4%E4%B9%8B%E5%A1%94" class="tag">阿加斯巴之塔</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="waf0.html">魔女议会：卡牌秘典/Witch Council: Card Codex</a></h2>
+        <div class="article-excerpt"><p><h1><b>魔女议会：卡牌秘典</b></h1></p><p>踏入《魔女议会：卡牌秘典》的奇幻世界，你将扮演一位年轻的魔女学徒，璐璐。为了守护古老的魔法传承，你必须挺身对抗日益腐*化的学生会，揭露他们背后的黑暗阴谋。这是一款融合了Roguelite元素的卡牌构筑游戏，每一次冒险都是独一无二的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%8D%A1%E7%89%8C%E6%9E%84%E7%AD%91" class="tag">卡牌构筑</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="4e1825fht0sn.html">皇家骑士团：重生/Tactics Ogre: Reborn/角色扮演</a></h2>
+        <div class="article-excerpt">...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%9A%87%E5%AE%B6%E9%AA%91%E5%A3%AB%E5%9B%A2" class="tag">皇家骑士团</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="btax8q65q2.html">打造世界/创造世界：Craft The World - 模拟经营你的矮人王国</a></h2>
+        <div class="article-excerpt"><h1><b>Craft The World：打造你的矮人王国</b></h1><p>深入 <b>Craft The World</b> 的奇妙世界，这是一款独一无二的沙盒策略游戏，巧妙融合了地城守护者、泰拉瑞亚和矮人要塞的精华元素。你将探索一个随机生成、充满未知危险和无尽可能性的世界，肩负起建造坚...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=Craft%20The%20World" class="tag">Craft The World</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="vsleutyul8e.html">最终幻想7：重制版/Final Fantasy VII Remake Intergrade</a></h2>
+        <div class="article-excerpt"><p><b>《最终幻想7：重制版Intergrade》：米德加的命运交响曲</b></p><p>在游戏史上留下浓墨重彩一笔的《FINAL FANTASY VII》，以《最终幻想7：重制版Intergrade》之名重塑经典，为玩家带来一场前所未有的视听盛宴。这款作品不仅仅是简单的画面升级，而是对原作世...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%9C%80%E7%BB%88%E5%B9%BB%E6%83%B37" class="tag">最终幻想7</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="nlrvffuitk.html">月球之谜</a></h2>
+        <div class="article-excerpt"><p><h1><b>月球之谜：一场孤立无援的星际冒险</b></h1></p><p><b>月球</b>，这颗亘古不变的地球卫星，如今却笼罩在一层诡异的阴影之中。当一名孤身执行任务的宇航员与地球失去所有联系，一场充满未知与危机的冒险就此拉开帷幕。你将扮演这位身陷绝境的宇航员，独自面对月球上潜藏的重重谜...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%9C%88%E7%90%83%E5%86%92%E9%99%A9" class="tag">月球冒险</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="b7rz6zhys.html">克拉肯城市/Kraken City/ 动作冒险游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>克拉肯城市：释放深海恐惧的动作冒险</b></h1></p><p>在《克拉肯城市》中，你将化身黑暗魔法师，侍奉着深海中的古老存在——克拉肯。作为克拉肯尼亚拉托的忠实使徒，你的使命是将这位海怪的恐怖力量倾泻到无知的人类世界。运用黑暗魔法和强大的力量，征服阻碍你的敌人，让克拉肯的威名...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%85%8B%E6%8B%89%E8%82%AF" class="tag">克拉肯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zjdh.html">攻城英雄/英雄攻城/Hero Siege/动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>深入《攻城英雄》的像素世界：一场史诗级的动作冒险</b></h1><p>准备好迎接一场前所未有的塔防挑战了吗？《攻城英雄》(Hero Siege) 并非你想象中的普通像素游戏。它以其独特的魅力，将经典的塔防元素与 Roguelike 的随机性和刺激的动作冒险完美融合，构建出一个充满惊喜...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%94%BB%E5%9F%8E%E8%8B%B1%E9%9B%84" class="tag">攻城英雄</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cpbnd.html">影廊2：雨之四葩/Shadow Corridor 2/恐怖惊悚</a></h2>
+        <div class="article-excerpt"><p><b>《影廊2：雨之四葩》：在无尽黑暗中寻求救赎</b></p><p>步入《影廊2：雨之四葩》的世界，你将体验到一种前所未有的恐惧感。这是一款令人心惊胆战的恐怖惊悚游戏，它将把你带入一个伸手不见五指的黑暗回廊，而你的目标只有一个：活下去，逃离这个噩梦般的地方。与前作相比，《雨之四葩》在恐怖氛围...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%BD%B1%E5%BB%8A" class="tag">影廊</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="z6t3kfgv6.html">通古斯：禁区实录 - 增强版/Tunguska: The Visitation</a></h2>
+        <div class="article-excerpt"><p><h1><b>战栗通古斯：禁区实录 - 增强版</b></h1></p><p>深入<b>通古斯</b>的黑暗核心，体验一场令人心跳加速的生存恐怖之旅。《战栗通古斯》以45度俯视角呈现，将你置身于一个充满未知危险的禁区。这里，时空扭曲撕裂现实，剧毒丧尸潜伏于阴影之中，而装备精良的土匪和逃兵则为了...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%80%9A%E5%8F%A4%E6%96%AF" class="tag">通古斯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3q04tlkx35x4.html">所谓侠客：真英雄的另类角色扮演</a></h2>
+        <div class="article-excerpt"><h1><b>《所谓侠客》：重塑你的江湖梦</b></h1><p>厌倦了千篇一律的侠义故事？《所谓侠客》将带你进入一个充满未知与可能的另类江湖。在这里，你不再是被命运束缚的棋子，而是能够书写自己传奇的真正主角。无论你是渴望成为一代宗师的武学奇才，还是挥金如土、玩转人生的富家子弟，亦或是身怀秘密、步步...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E8%A7%92%E8%89%B2%E6%89%AE%E6%BC%94" class="tag">角色扮演</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2gpc15eynm8s.html">台北仲夏夜之梦/模拟经营唯美游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>台北仲夏夜之梦：在唯美中经营你的爱情故事</b></h1></p><p>盛夏的台北，白天的喧嚣逐渐褪去，夜晚的微风带来了丝丝凉意。霓虹闪烁，映照着这座城市的独特魅力。《台北仲夏夜之梦》便以此为舞台，你将化身为一位初来乍到的年轻旅人，在这座充满活力又略带神秘的城市中，展开一段寻觅真...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%8F%B0%E5%8C%97" class="tag">台北</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="403t8nz61iy.html"></a></h2>
+        <div class="article-excerpt"></b></h2><ul><li>LEMURIA - Halloween：体验万圣节主题的特殊任务和服装</li><li>LEMURIA - Mature DLC：包含更成熟的内容和主题</li></ul><h2><b>版本信息：</b></h2><p>Build.16897489 | 容量33GB...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%86%92%E9%99%A9%E5%B0%84%E5%87%BB" class="tag">冒险射击</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="dhugvr.html">狩猎之道/猎人之路/Way of the Hunter</a></h2>
+        <div class="article-excerpt"><h1><b>深入荒野：探索《狩猎之道/猎人之路/Way of the Hunter》的真实狩猎体验</b></h1><p>准备好踏入《狩猎之道/猎人之路/Way of the Hunter》的世界，这是一款将你带入令人叹为观止的荒野深处的动作冒险游戏。在这里，你将不仅仅是一个射击者，而是一个真正的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%8B%A9%E7%8C%8E" class="tag">狩猎</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="iduh6.html">雪人兄弟特别：周年纪念版/SNOW BROS. SPECIAL</a></h2>
+        <div class="article-excerpt"><p><b>雪人兄弟特别：周年纪念版</b>是对经典街机游戏《雪人兄弟》的现代重塑，旨在为所有年龄段的玩家带来焕然一新的游戏体验。这款周年纪念版不仅仅是对原作的简单复刻，更是在保留原作精髓的基础上，加入了诸多创新元素，使游戏焕发出新的活力。</p><h1>重温经典，再战冰雪世界</h1><p>《雪人...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%91%A8%E5%B9%B4%E7%BA%AA%E5%BF%B5" class="tag">周年纪念</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="7rad06lewxk.html">安卓植物大战僵尸无双版v1.0解锁无限阳光</a></h2>
+        <div class="article-excerpt"><h1><b>植物大战僵尸：无双觉醒</b></h1><p>欢迎来到植物大战僵尸的全新纪元——<b>“无双版”v1.0</b>！这并非官方版本，而是由一位充满热情的玩家倾力打造的同人作品。它颠覆了你对传统植物大战僵尸的认知，将策略塔防与*快*节奏的无双割*草*体验巧妙融合。</p><p><b>魔改植...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8" class="tag">植物大战僵尸</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="txt1q0x9aih.html">铁骑少女/Cavalry Girls/动作冒险游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>铁骑少女：在炮火中绽放的钢铁之花</b></h1></p><p>准备好加入这场史诗般的动作冒险了吗？在《铁骑少女》(Cavalry Girls)的世界里，你将化身无畏的少女机兵指挥官，率领你的钢铁军团对抗汹涌而来的敌军。这不是一场简单的战斗，而是一场关于生存、策略和守护的严峻考验...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%93%81%E9%AA%91%E5%B0%91%E5%A5%B3" class="tag">铁骑少女</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cj9uutf.html"><b>MiSide：与游戏中的她相恋</b></a></h2>
+        <div class="article-excerpt"><p>在虚拟世界中，我们常常能邂逅那些令人心动的角色。她们或许拥有绝世容颜，或许具备独特的性格魅力，又或许仅仅因为在游戏旅途中与你并肩作战，便在你心中占据了一席之地。<b>MiSide</b>系列游戏正是将这种情感体验推向极致的作品，它让你有机会将虚拟的爱恋化为现实，体验与游戏中钟爱的女孩相遇、相知...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=MiSide" class="tag">MiSide</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ziou.html">黑暗之魂2：原罪学者/DARK SOULS II</a></h2>
+        <div class="article-excerpt"><p><h1><b>《黑暗之魂2：原罪学者》：重塑的黑暗史诗</b></h1></p><p>《黑暗之魂2：原罪学者》是由FromSoftware精心打造，BANDAI NAMCO与FromSoftware联合发行的动作冒险游戏，是《黑暗之魂2》的集大成版本。它不仅仅是对原作的简单整合，更是一次全面的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%BB%91%E6%9A%97%E4%B9%8B%E9%AD%82" class="tag">黑暗之魂</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cormo.html">真知之岛：群岛间的益智探秘</a></h2>
+        <div class="article-excerpt"><p>欢迎来到<b>真知之岛</b>，一个充满奇思妙想的共享世界，这里散落着无数的谜题，等待着像你一样的探索者来揭开。在这片令人心旷神怡的群岛中，你将扮演一位求知者，穿梭于壮丽的浮岛之间，沉浸在解谜的乐趣中。</p><p><b>解谜与发现：</b>《真知之岛》为你准备了超过10,000个精心设计的谜...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%9B%8A%E6%99%BA%E6%B8%B8%E6%88%8F" class="tag">益智游戏</a>
+            </div>
+        </div>
+    </div>
+</div> 占位符动态生成 -->
+        
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2ob1ga8xui.html">凯恩的遗产：噬魂者 1&2 重制版</a></h2>
+        <div class="article-excerpt"><p><h1><b>《凯恩的遗产：噬魂者》重制版：黑暗宿命的史诗回归</b></h1></p><p>在永恒的命运漩涡中，光与暗的交织，背叛与救赎的纠葛，构成了《凯恩的遗产：噬魂者》系列的核心。如今，这部黑暗奇幻史诗以重制之姿，再次降临。它不仅仅是一次简单的画面升级，更是一次对经典灵魂的深度挖掘，将凯...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%99%AC%E9%AD%82%E8%80%85" class="tag">噬魂者</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="i95l.html">Funko Fusion一场动作冒险游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>Funko Fusion：一场跨界狂欢的动作冒险之旅</b></h1></p><p>准备好迎接一场前所未有的粉丝盛宴了吗？《Funko Fusion》将你最爱的系列作品中的标志性世界和角色汇聚一堂，以4人合作的模式，展开一场惊险刺激的动作冒险。10:10 Games以其天马行空的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=Funko" class="tag">Funko</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="a04iedktc.html">战斗天赋/Battle Talent/支持网络联机/支持VR</a></h2>
+        <div class="article-excerpt"><h1><b>沉浸式VR格斗体验：《战斗天赋》联机版强势来袭</b></h1><p>准备好进入一个充满挑战和刺激的虚拟现实格斗世界了吗？《战斗天赋》(Battle Talent) 是一款融合了先进物理引擎和深度格斗机制的VR游戏，现在，它带来了激动人心的联机功能，让你可以与朋友们一起磨练战斗技巧，共...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=VR%E6%A0%BC%E6%96%97" class="tag">VR格斗</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="xajdhyrli.html">师父数字豪华版/Sifu Digital Deluxe Edition</a></h2>
+        <div class="article-excerpt"><h1><b>《师父》数字豪华版：以武复仇，燃魂动作体验</b></h1><p>《师父》是一款由Sloclap倾力打造的第三人称武术动作游戏。它不仅仅是一款游戏，更是一场关于复仇、成长与自我救赎的武道修行。数字豪华版将带您更深入地体验这场充满挑战与荣耀的复仇之旅。</p><p>您将扮演一位身怀绝技的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%B8%88%E7%88%B6" class="tag">师父</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="whde.html">跨西伯利亚铁路模拟器/Trans-Siberian Railway</a></h2>
+        <div class="article-excerpt"><p><h1><b>跨西伯利亚铁路模拟器：一场真实的生存之旅</b></h1></p><p>准备好踏上世界上最长的铁路，体验在严酷的西伯利亚荒野中驾驶经典俄式火车头的刺激与挑战吗？《跨西伯利亚铁路模拟器》将带你进入一个充满危险与未知的世界，在这里，生存将是你唯一的法则。</p><p><b>真实的铁路...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%A8%A1%E6%8B%9F%E5%99%A8" class="tag">模拟器</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="kpr5t01u3nag.html">战国王朝/Sengoku Dynasty/模拟经营</a></h2>
+        <div class="article-excerpt">```html<h1><b>战国王朝：在动荡的封建日本建立你的王朝</b></h1><p>《战国王朝》(Sengoku Dynasty) 是一款深度融合了开放世界角色扮演、城市建造、生活模拟和生存元素的史诗级游戏。玩家将置身于动荡不安的封建日本，体验从一介草民到建立并统治自己王朝的传奇历程。无论是独...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%88%98%E5%9B%BD%E7%8E%8B%E6%9C%9D" class="tag">战国王朝</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="eojwar0.html">蠕行的恐惧：深海的威胁</a></h2>
+        <div class="article-excerpt"><p><b>深海的威胁</b>，一个名字就足以让人感到寒意。</p><p>我抵达印斯茅斯的第十天，这座小镇弥漫着一种令人窒息的压抑感。居民的行为举止透着诡异，他们目光呆滞，面容僵硬，仿佛灵魂被某种无形的力量所操控。交谈中，他们时常会突然跪倒在地，口中念念有词，那些古老的祷告词充满了对克苏鲁和古神的赞...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%85%8B%E8%8B%8F%E9%B2%81" class="tag">克苏鲁</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="74as.html">Vampire Hunters：枪火炼狱</a></h2>
+        <div class="article-excerpt"><h1><b>Vampire Hunters：枪火炼狱</b></h1><p>深入黑暗，化身终极<b>吸血鬼猎人</b>。在这个充满动作与冒险的 Roguelite FPS 游戏中，你将面对无尽的嗜血怪物，而生存的关键在于你那逐渐壮大的武器库。</p><p>你的任务很简单：猎杀吸血鬼。但要做到这一点...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%90%B8%E8%A1%80%E9%AC%BC%E7%8C%8E%E4%BA%BA" class="tag">吸血鬼猎人</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="uuimgap7ks.html">地狱种子：全章节</a></h2>
+        <div class="article-excerpt"><p><h1><b>《地狱种子：全章节》：黑暗深渊的完整探索</b></h1></p><p>准备好迎接终极的恐怖体验吗？《地狱种子：全章节》将带您深入一个令人毛骨悚然、充满悬疑和未知恐惧的世界。这款游戏不仅仅是一场生存之旅，更是一次对人类精神极限的考验。每一次选择，每一个脚步，都可能决定您的命运，也...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%9C%B0%E7%8B%B1%E7%A7%8D%E5%AD%90" class="tag">地狱种子</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="fhm0md.html">死亡急速66/DeathSprint 66/体育竞速游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>《DEATHSPRINT 66》：一场速度与死亡的华丽竞速</b></h1></p><p>准备好迎接《DEATHSPRINT 66》带来的肾上腺素激增的体验吧！这款体育竞速游戏将高速跑酷的刺激感、致命障碍的挑战以及残酷技能的策略运用完美融合，打造了一场前所未有的竞技盛宴。在这里，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%AB%9E%E9%80%9F%E6%B8%B8%E6%88%8F" class="tag">竞速游戏</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zg8lmfn3te.html">找个班上：轮滑青年的职场狂飙</a></h2>
+        <div class="article-excerpt"><p><b>《找个班上：轮滑青年的职场狂飙》</b>是一款独具特色的动作冒险游戏，将速度、技巧与职场挑战巧妙融合。你将扮演一位身着轮滑鞋、行动如风的年轻人，在竞争激烈的企业环境中，用你的轮滑技巧，一路过关斩将，最终找到属于自己的位置。</p><p>游戏中，你将面临各种各样的职场挑战，例如：</p><...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E8%BD%AE%E6%BB%91" class="tag">轮滑</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="iyfcuxp6vhfw.html">东京巫女：幸存者/W.A.N.D. Project/动作冒险</a></h2>
+        <div class="article-excerpt"><p><h1><b>化身东京巫女，守护崩坏边缘的都市</b></h1></p><p>东京，这座曾经繁华的都市，如今正面临着前所未有的危机。异象丛生，邪恶势力蠢蠢欲动，城市的安危岌岌可危。玩家将扮演一位肩负重任的巫女，挺身而出，守护这片土地，成为最后的幸存者。</p><p><h1><b>W.A.N.D...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E4%B8%9C%E4%BA%AC%E5%B7%AB%E5%A5%B3" class="tag">东京巫女</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="uavcv3i0w.html">无声的恐惧：森林18分钟</a></h2>
+        <div class="article-excerpt"><h1>无声的恐惧：森林18分钟</h1><p>进入《无声的恐惧：森林18分钟》，一款由两位独立开发者倾力打造的**恐怖**短篇游戏。游戏引擎采用最先进的虚幻引擎5，旨在为玩家带来前所未有的沉浸式恐惧体验。</p><p><b>挑战：</b>在寂静的森林中，你必须坚持18分钟，唯一的要求是——不要尖叫...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%81%90%E6%80%96%E6%B8%B8%E6%88%8F" class="tag">恐怖游戏</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="xmyo.html">瞄准实验室/专业练枪软件/Aimlabs/Aim Lab</a></h2>
+        <div class="article-excerpt"><h1><b>Aim Lab：提升射击精准度的专业训练平台</b></h1><p>Aim Lab 是一款备受全球射击游戏玩家推崇的专业练枪软件。无论您是电竞选手，还是想要提升游戏技巧的业余爱好者，Aim Lab 都能为您提供个性化的训练方案，助您快速提高射击水平。</p><p>Aim Lab 并非简...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=Aim%20Lab" class="tag">Aim Lab</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="exnjz017f.html">异次元心动指令：幻想少女的进击</a></h2>
+        <div class="article-excerpt"><h1><b>异次元心动指令：幻想少女的进击</b></h1><p>准备好迎接一场来自异次元的心动风暴了吗？《异次元心动指令：幻想少女的进击》将带你进入一个前所未有的幻想世界，在这里，你将扮演一位肩负重任的救世主，与多位风格迥异的韩国异次元美少女邂逅，展开一段充满爱与冒险的奇幻之旅。</p><p>这...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%BC%82%E6%AC%A1%E5%85%83" class="tag">异次元</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9e19ggy7j.html">传奇重装步兵/Legendary Hoplite/动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>传奇重装步兵：希腊神话中的史诗防御</b></h1><p>在《传奇重装步兵》(Legendary Hoplite)中，你将化身古希腊的指挥官，肩负起抵御神话怪物和古代部落入侵的重任，守护人类文明的火种。这是一款融合了紧张刺激的动作RPG元素与策略塔防机制的游戏，你需要在战场上浴血奋战，...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%87%8D%E8%A3%85%E6%AD%A5%E5%85%B5" class="tag">重装步兵</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="owadr686.html">神之亵渎2/Blasphemous 2/动作冒险</a></h2>
+        <div class="article-excerpt"><p><h1><b>神之亵渎2：在苦难中挣扎的救赎之旅</b></h1></p><p>在《神之亵渎2》(Blasphemous 2)中，标志性的“悔罪者一号”再度觉醒，他将再次踏上无尽的征程，直面那神秘莫测的“奇迹”。这是一个充满未知的险恶世界，无数的谜团和秘密等待着被揭开，而玩家将扮演“悔罪者一号...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%A5%9E%E4%B9%8B%E4%BA%B5%E6%B8%8E2" class="tag">神之亵渎2</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="0mg5qqen28.html">战争游戏：红龙/Wargame/支持网络联机/即时战略</a></h2>
+        <div class="article-excerpt">```html<h1><b>战争游戏：红龙 - 亚洲战场上的史诗对决</b></h1><p><b>《战争游戏：红龙》</b>，Eugen Systems倾力打造，Focus Home InTeractive荣耀发行的《战争游戏》系列第三部作品，将即时战略的舞台从欧洲转移至充满变数的亚洲，开启一场跨越...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%88%98%E4%BA%89%E6%B8%B8%E6%88%8F%EF%BC%9A%E7%BA%A2%E9%BE%99" class="tag">战争游戏：红龙</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="llyj7383wu.html">妹相随黑白世界的缤纷冒险～/Living With Sister</a></h2>
+        <div class="article-excerpt"><p><b>《妹相随：黑白世界的缤纷冒险》</b>是一款引人入胜的角色扮演游戏，故事发生在一个色彩被剥夺的奇幻世界中。玩家将扮演一位立志成为伟大冒险者的年轻人，与自己的妹妹一同踏上旅程，用爱与勇气，为这个单调的世界重新找回失去的色彩。</p><p>在这个世界里，曾经鲜艳夺目的颜色逐渐褪去，留下的只有...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%86%92%E9%99%A9" class="tag">冒险</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="eyfn9.html">我靠双修拯救世界/Couple-Cultivation Saves the World</a></h2>
+        <div class="article-excerpt"><h1><b>《双修救世录》：一场跨越时空的修行之旅</b></h1><p>《双修救世录》(Couple-Cultivation Saves the World)是一款沉浸式真人互动影游，玩家将以第一人称视角扮演身负异能的男主角，意外发现自家传承的神秘功法，竟能帮助异世界的少女们精进修为。你，作为九...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%8F%8C%E4%BF%AE" class="tag">双修</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cbo7l8yp.html">拜托！请你先告白式真人恋爱模拟游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>《告白预演：恋爱模拟》—— 开启你的专属恋爱剧本</b></h1></p><p>你是否渴望一段充满甜蜜与悸动的恋爱？是否幻想过在不同类型的女孩中做出选择，体验截然不同的情感旅程？《告白预演：恋爱模拟》将满足你的一切想象。这是一款第一人称视角的沉浸式真人恋爱模拟游戏，你将化身男主角...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%81%8B%E7%88%B1%E6%A8%A1%E6%8B%9F" class="tag">恋爱模拟</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9npb6l.html">雷纳提斯/REYNATIS/角色扮演游戏</a></h2>
+        <div class="article-excerpt"><p><h1>涉谷异闻：雷纳提斯 (REYNATIS) 的魔法交织之旅</h1></p><p>欢迎来到现代东京涉谷，一个隐藏着魔法秘密的繁华都市。《雷纳提斯 (REYNATIS)》将带您进入一个魔法与现实交织的世界，您将扮演雾积真凛，一个渴望自由的年轻人，踏入这个充满神秘与机遇的城市。同时，您也将体...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%9B%B7%E7%BA%B3%E6%8F%90%E6%96%AF" class="tag">雷纳提斯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ue2vxg5.html">阿西！我的合租生活竟是后宫剧？/Five Hearts Under One Roof</a></h2>
+        <div class="article-excerpt"><p><h1>合租物语：当五个女孩住进我的家</h1></p><p>吴宥万，一个*丝单身青年，一直过着平静而略显单调的生活。一则“租客招募”的广告，彻底打破了他的日常。谁能想到，接下来的日子，竟然会变成一场啼笑皆非的恋爱喜剧？</p><p><b>五个性格迥异的美少女，怀揣着各自的故事，陆续住进了他的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%90%88%E7%A7%9F%EF%BC%8C%E6%81%8B%E7%88%B1%EF%BC%8C%E5%89%A7%E6%83%85" class="tag">合租，恋爱，剧情</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="19nvftfbc.html">圣女之歌ZERO 2：鳞痕誓约</a></h2>
+        <div class="article-excerpt"><h1><b>圣女之歌ZERO 2：鳞痕誓约</b></h1><p>在末日轮回的阴影下，双子圣女的命运交织，一场关于罪与救赎的史诗即将展开。《圣女之歌ZERO 2：鳞痕誓约》以其引人入胜的剧情和革新的战斗系统，带领玩家步入一个充满奇幻与感动的冒险世界。夏玛，一位背负着罪痕的少女，她的笑容背后隐藏着无...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%B3%9E%E7%97%95%E8%AA%93%E7%BA%A6" class="tag">鳞痕誓约</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8m9m20.html">恐怖黎明：终极版/Grim Dawn Definitive Edition</a></h2>
+        <div class="article-excerpt"><h1><b>《恐怖黎明：终极版》：在末世挣扎求生</b></h1><p>《恐怖黎明：终极版》是一款继承了《泰坦之旅》精神的暗黑ARPG，玩家将踏入饱受战火摧残的Cairn世界，体验在末世中挣扎求生的残酷与希望。曾经辉煌的帝国已经陨落，人类文明濒临崩溃，而你，将成为这片废墟中最后的希望。</p><p...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%81%90%E6%80%96%E9%BB%8E%E6%98%8E" class="tag">恐怖黎明</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="l2s0e9qfnm87.html">金刚：绝境求生</a></h2>
+        <div class="article-excerpt"><p><h1><b>金刚：绝境求生 - 泰坦战场上的生存史诗</b></h1></p><p>当泰坦巨兽的怒火点燃城市，生存便成为唯一的法则。在《金刚：绝境求生》中，你将扮演传奇巨兽金刚，置身于《哥斯拉大战金刚》事件之后满目疮痍的世界，为了生存而战，为了守护而战。</p><p>这场惊心动魄的动作冒险将...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%87%91%E5%88%9A" class="tag">金刚</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qnq80d1.html">阿喀琉斯：不为人知的传奇/Achilles: Legends Untold</a></h2>
+        <div class="article-excerpt"><p><h1><b>阿喀琉斯：不为人知的传奇</b></h1></p><p>在《阿喀琉斯：不为人知的传奇》中，你将扮演这位希腊神话中的英雄，体验一场史诗般的冒险。这款类似魂系列的动作角色扮演游戏，将你带入一个充满神话生物和神祇冲突的世界，你必须结束哈迪斯与阿瑞斯之间的无尽纷争，恢复奥林匹斯山的秩序。...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%98%BF%E5%96%80%E7%90%89%E6%96%AF" class="tag">阿喀琉斯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="umj3pjjw4v8.html">毁了的护士/Ruined Nurse/恐怖惊悚游戏</a></h2>
+        <div class="article-excerpt"><p><b>《毁了的护士》</b>：一场噩梦般的医院惊悚之旅</p><h1>深入黑暗：游戏背景</h1><p>你将步入一家被黑暗笼罩的医院，这里曾经是救死扶伤的圣地，如今却成为了滋生恐惧的温床。作为一名身陷囹圄的受害者，你必须揭开隐藏在这家医院背后的邪恶秘密，并找到逃脱的唯一出路。曾经的护士，如今却...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%8A%A4%E5%A3%AB" class="tag">护士</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="q7x2mm2.html">最后的低语/Last Whisper/动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>最后的低语：在末日中挣扎求生</b></h1><p>《最后的低语》(Last Whisper)是一款沉浸式的合作僵尸生存游戏，设定在一个广阔且危机四伏的开放世界中。玩家将扮演末世幸存者，面对数量不断增长、变异的僵尸群，以及其他为了生存而不择手段的幸存者。</p><p><b>探索与发现：...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%94%9F%E5%AD%98" class="tag">生存</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="qpinp1ksvb.html">夜勤病栋/Night Shift Nurses/动作冒险</a></h2>
+        <div class="article-excerpt">```html<h1><b>夜勤病栋：午夜魅影下的禁忌之恋</b></h1><p>《夜勤病栋》（Night Shift Nurses）是一款融合了动作冒险元素的视觉小说，以其扣人心弦的剧情和引人入胜的角色设定，在游戏界独树一帜。本作最初于1999年推出，凭借其大胆的故事题材和精良的制作，迅速获得了大...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%A4%9C%E5%8B%A4%E7%97%85%E6%A0%8B" class="tag">夜勤病栋</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="p8kx2xjhf.html">阿加斯巴之塔/Towers of Aghasba动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>探索与建造：阿加斯巴之塔的奇幻冒险</b></h1><p>《阿加斯巴之塔》（Towers of Aghasba）是一款引人入胜的开放世界建造与冒险游戏，邀请玩家踏入一个充满奇幻色彩的岛屿世界。在这个世界里，玩家将扮演开拓者，从一片荒凉的土地开始，逐步建立起繁荣的文明，同时探索蕴藏其中的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%98%BF%E5%8A%A0%E6%96%AF%E5%B7%B4%E4%B9%8B%E5%A1%94" class="tag">阿加斯巴之塔</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="waf0.html">魔女议会：卡牌秘典/Witch Council: Card Codex</a></h2>
+        <div class="article-excerpt"><p><h1><b>魔女议会：卡牌秘典</b></h1></p><p>踏入《魔女议会：卡牌秘典》的奇幻世界，你将扮演一位年轻的魔女学徒，璐璐。为了守护古老的魔法传承，你必须挺身对抗日益腐*化的学生会，揭露他们背后的黑暗阴谋。这是一款融合了Roguelite元素的卡牌构筑游戏，每一次冒险都是独一无二的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%8D%A1%E7%89%8C%E6%9E%84%E7%AD%91" class="tag">卡牌构筑</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="4e1825fht0sn.html">皇家骑士团：重生/Tactics Ogre: Reborn/角色扮演</a></h2>
+        <div class="article-excerpt">...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%9A%87%E5%AE%B6%E9%AA%91%E5%A3%AB%E5%9B%A2" class="tag">皇家骑士团</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="btax8q65q2.html">打造世界/创造世界：Craft The World - 模拟经营你的矮人王国</a></h2>
+        <div class="article-excerpt"><h1><b>Craft The World：打造你的矮人王国</b></h1><p>深入 <b>Craft The World</b> 的奇妙世界，这是一款独一无二的沙盒策略游戏，巧妙融合了地城守护者、泰拉瑞亚和矮人要塞的精华元素。你将探索一个随机生成、充满未知危险和无尽可能性的世界，肩负起建造坚...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=Craft%20The%20World" class="tag">Craft The World</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="vsleutyul8e.html">最终幻想7：重制版/Final Fantasy VII Remake Intergrade</a></h2>
+        <div class="article-excerpt"><p><b>《最终幻想7：重制版Intergrade》：米德加的命运交响曲</b></p><p>在游戏史上留下浓墨重彩一笔的《FINAL FANTASY VII》，以《最终幻想7：重制版Intergrade》之名重塑经典，为玩家带来一场前所未有的视听盛宴。这款作品不仅仅是简单的画面升级，而是对原作世...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%9C%80%E7%BB%88%E5%B9%BB%E6%83%B37" class="tag">最终幻想7</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="nlrvffuitk.html">月球之谜</a></h2>
+        <div class="article-excerpt"><p><h1><b>月球之谜：一场孤立无援的星际冒险</b></h1></p><p><b>月球</b>，这颗亘古不变的地球卫星，如今却笼罩在一层诡异的阴影之中。当一名孤身执行任务的宇航员与地球失去所有联系，一场充满未知与危机的冒险就此拉开帷幕。你将扮演这位身陷绝境的宇航员，独自面对月球上潜藏的重重谜...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%9C%88%E7%90%83%E5%86%92%E9%99%A9" class="tag">月球冒险</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="b7rz6zhys.html">克拉肯城市/Kraken City/ 动作冒险游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>克拉肯城市：释放深海恐惧的动作冒险</b></h1></p><p>在《克拉肯城市》中，你将化身黑暗魔法师，侍奉着深海中的古老存在——克拉肯。作为克拉肯尼亚拉托的忠实使徒，你的使命是将这位海怪的恐怖力量倾泻到无知的人类世界。运用黑暗魔法和强大的力量，征服阻碍你的敌人，让克拉肯的威名...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%85%8B%E6%8B%89%E8%82%AF" class="tag">克拉肯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="zjdh.html">攻城英雄/英雄攻城/Hero Siege/动作冒险</a></h2>
+        <div class="article-excerpt"><h1><b>深入《攻城英雄》的像素世界：一场史诗级的动作冒险</b></h1><p>准备好迎接一场前所未有的塔防挑战了吗？《攻城英雄》(Hero Siege) 并非你想象中的普通像素游戏。它以其独特的魅力，将经典的塔防元素与 Roguelike 的随机性和刺激的动作冒险完美融合，构建出一个充满惊喜...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%94%BB%E5%9F%8E%E8%8B%B1%E9%9B%84" class="tag">攻城英雄</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cpbnd.html">影廊2：雨之四葩/Shadow Corridor 2/恐怖惊悚</a></h2>
+        <div class="article-excerpt"><p><b>《影廊2：雨之四葩》：在无尽黑暗中寻求救赎</b></p><p>步入《影廊2：雨之四葩》的世界，你将体验到一种前所未有的恐惧感。这是一款令人心惊胆战的恐怖惊悚游戏，它将把你带入一个伸手不见五指的黑暗回廊，而你的目标只有一个：活下去，逃离这个噩梦般的地方。与前作相比，《雨之四葩》在恐怖氛围...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%BD%B1%E5%BB%8A" class="tag">影廊</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="z6t3kfgv6.html">通古斯：禁区实录 - 增强版/Tunguska: The Visitation</a></h2>
+        <div class="article-excerpt"><p><h1><b>战栗通古斯：禁区实录 - 增强版</b></h1></p><p>深入<b>通古斯</b>的黑暗核心，体验一场令人心跳加速的生存恐怖之旅。《战栗通古斯》以45度俯视角呈现，将你置身于一个充满未知危险的禁区。这里，时空扭曲撕裂现实，剧毒丧尸潜伏于阴影之中，而装备精良的土匪和逃兵则为了...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%80%9A%E5%8F%A4%E6%96%AF" class="tag">通古斯</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="3q04tlkx35x4.html">所谓侠客：真英雄的另类角色扮演</a></h2>
+        <div class="article-excerpt"><h1><b>《所谓侠客》：重塑你的江湖梦</b></h1><p>厌倦了千篇一律的侠义故事？《所谓侠客》将带你进入一个充满未知与可能的另类江湖。在这里，你不再是被命运束缚的棋子，而是能够书写自己传奇的真正主角。无论你是渴望成为一代宗师的武学奇才，还是挥金如土、玩转人生的富家子弟，亦或是身怀秘密、步步...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E8%A7%92%E8%89%B2%E6%89%AE%E6%BC%94" class="tag">角色扮演</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="2gpc15eynm8s.html">台北仲夏夜之梦/模拟经营唯美游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>台北仲夏夜之梦：在唯美中经营你的爱情故事</b></h1></p><p>盛夏的台北，白天的喧嚣逐渐褪去，夜晚的微风带来了丝丝凉意。霓虹闪烁，映照着这座城市的独特魅力。《台北仲夏夜之梦》便以此为舞台，你将化身为一位初来乍到的年轻旅人，在这座充满活力又略带神秘的城市中，展开一段寻觅真...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%8F%B0%E5%8C%97" class="tag">台北</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="403t8nz61iy.html"></a></h2>
+        <div class="article-excerpt"></b></h2><ul><li>LEMURIA - Halloween：体验万圣节主题的特殊任务和服装</li><li>LEMURIA - Mature DLC：包含更成熟的内容和主题</li></ul><h2><b>版本信息：</b></h2><p>Build.16897489 | 容量33GB...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%86%92%E9%99%A9%E5%B0%84%E5%87%BB" class="tag">冒险射击</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="dhugvr.html">狩猎之道/猎人之路/Way of the Hunter</a></h2>
+        <div class="article-excerpt"><h1><b>深入荒野：探索《狩猎之道/猎人之路/Way of the Hunter》的真实狩猎体验</b></h1><p>准备好踏入《狩猎之道/猎人之路/Way of the Hunter》的世界，这是一款将你带入令人叹为观止的荒野深处的动作冒险游戏。在这里，你将不仅仅是一个射击者，而是一个真正的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%8B%A9%E7%8C%8E" class="tag">狩猎</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="iduh6.html">雪人兄弟特别：周年纪念版/SNOW BROS. SPECIAL</a></h2>
+        <div class="article-excerpt"><p><b>雪人兄弟特别：周年纪念版</b>是对经典街机游戏《雪人兄弟》的现代重塑，旨在为所有年龄段的玩家带来焕然一新的游戏体验。这款周年纪念版不仅仅是对原作的简单复刻，更是在保留原作精髓的基础上，加入了诸多创新元素，使游戏焕发出新的活力。</p><h1>重温经典，再战冰雪世界</h1><p>《雪人...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%91%A8%E5%B9%B4%E7%BA%AA%E5%BF%B5" class="tag">周年纪念</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="7rad06lewxk.html">安卓植物大战僵尸无双版v1.0解锁无限阳光</a></h2>
+        <div class="article-excerpt"><h1><b>植物大战僵尸：无双觉醒</b></h1><p>欢迎来到植物大战僵尸的全新纪元——<b>“无双版”v1.0</b>！这并非官方版本，而是由一位充满热情的玩家倾力打造的同人作品。它颠覆了你对传统植物大战僵尸的认知，将策略塔防与*快*节奏的无双割*草*体验巧妙融合。</p><p><b>魔改植...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8" class="tag">植物大战僵尸</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="txt1q0x9aih.html">铁骑少女/Cavalry Girls/动作冒险游戏</a></h2>
+        <div class="article-excerpt"><p><h1><b>铁骑少女：在炮火中绽放的钢铁之花</b></h1></p><p>准备好加入这场史诗般的动作冒险了吗？在《铁骑少女》(Cavalry Girls)的世界里，你将化身无畏的少女机兵指挥官，率领你的钢铁军团对抗汹涌而来的敌军。这不是一场简单的战斗，而是一场关于生存、策略和守护的严峻考验...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%93%81%E9%AA%91%E5%B0%91%E5%A5%B3" class="tag">铁骑少女</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cj9uutf.html"><b>MiSide：与游戏中的她相恋</b></a></h2>
+        <div class="article-excerpt"><p>在虚拟世界中，我们常常能邂逅那些令人心动的角色。她们或许拥有绝世容颜，或许具备独特的性格魅力，又或许仅仅因为在游戏旅途中与你并肩作战，便在你心中占据了一席之地。<b>MiSide</b>系列游戏正是将这种情感体验推向极致的作品，它让你有机会将虚拟的爱恋化为现实，体验与游戏中钟爱的女孩相遇、相知...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=MiSide" class="tag">MiSide</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ziou.html">黑暗之魂2：原罪学者/DARK SOULS II</a></h2>
+        <div class="article-excerpt"><p><h1><b>《黑暗之魂2：原罪学者》：重塑的黑暗史诗</b></h1></p><p>《黑暗之魂2：原罪学者》是由FromSoftware精心打造，BANDAI NAMCO与FromSoftware联合发行的动作冒险游戏，是《黑暗之魂2》的集大成版本。它不仅仅是对原作的简单整合，更是一次全面的...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E9%BB%91%E6%9A%97%E4%B9%8B%E9%AD%82" class="tag">黑暗之魂</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cormo.html">真知之岛：群岛间的益智探秘</a></h2>
+        <div class="article-excerpt"><p>欢迎来到<b>真知之岛</b>，一个充满奇思妙想的共享世界，这里散落着无数的谜题，等待着像你一样的探索者来揭开。在这片令人心旷神怡的群岛中，你将扮演一位求知者，穿梭于壮丽的浮岛之间，沉浸在解谜的乐趣中。</p><p><b>解谜与发现：</b>《真知之岛》为你准备了超过10,000个精心设计的谜...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%9B%8A%E6%99%BA%E6%B8%B8%E6%88%8F" class="tag">益智游戏</a>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- 分页部分 - 使用动态生成的HTML -->
+    <div class="pagination">
+        <div class="pagination"><a href="posts_36.html">上一页</a><a href="posts.html">11</a><span>...</span><a href="posts_35.html">35</a><a href="posts_36.html">36</a><span class="current">37</span><a href="posts_38.html">38</a><a href="posts_39.html">39</a><span>...</span><a href="posts_43.html">43</a><a href="posts_38.html">下一页</a></div>
+    </div>
+    
+    <!-- 友情链接区域 -->
+    <div class="friendly-links">
+        <div class="container">
+            <h3 class="title">生活点滴好用</h3>
+            <ul>
+                <li><a href="http://www.weizhang8.cn/" rel="nofollow" target="_blank">违章查询</a></li>
+                <li><a href="https://www.didiglobal.com/" rel="nofollow" target="_blank">滴滴打车</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <h3 class="title">购物网址大全</h3>
+            <ul>
+                <li><a href="http://www.vip.com/" rel="nofollow" target="_blank">唯品会</a></li>
+                <li><a href="http://www.vmall.com/" rel="nofollow" target="_blank">华为商城</a></li>
+                <li><a href="http://www.tmall.com/" rel="nofollow" target="_blank">天猫商城</a></li>
+                <li><a href="https://www.amazon.cn/" rel="nofollow" target="_blank">亚马逊</a></li>
+                <li><a href="http://www.jd.com/" rel="nofollow" target="_blank">京东商城</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 小梦静态博客 | <a href="sitemap5.xml" target="_blank">网站地图</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源列表 - 纯净下载库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+            color: #444;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e0e8f5;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .article-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        .article-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .article-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .article-content {
+            padding: 25px;
+        }
+        .article-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .article-title a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .article-title a:hover {
+            color: #4a89dc;
+            text-decoration: underline;
+        }
+        .article-excerpt {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px dashed #eaeaea;
+            padding-top: 15px;
+        }
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background-color: #f0f5ff;
+            color: #4a89dc;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .tag:hover {
+            background-color: #4a89dc;
+            color: white;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 16px;
+            background: #f0f5ff;
+            color: #4a89dc;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #c0d0f0;
+            transition: all 0.3s ease;
+        }
+        .pagination a:hover {
+            background: #4a89dc;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(74, 137, 220, 0.5);
+        }
+        .pagination .current {
+            background: #4a89dc;
+            color: #fff;
+            font-weight: bold;
+        }
+        .pagination .disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            background: #f5f9ff;
+        }
+        @media (max-width: 600px) {
+            .pagination {
+                gap: 5px;
+            }
+            .pagination a, .pagination span {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 友情链接样式 */
+        .friendly-links {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #eaeaea;
+        }
+        .friendly-links .container {
+            margin-bottom: 30px;
+        }
+        .friendly-links .title {
+            font-size: 1.3rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .friendly-links ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .friendly-links li a {
+            display: block;
+            padding: 12px 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .friendly-links li a:hover {
+            background: #4a89dc;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin: 40px 0 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #4a89dc;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .article-item {
+                margin-bottom: 20px;
+            }
+            .article-content {
+                padding: 20px;
+            }
+            .article-title {
+                font-size: 1.3rem;
+            }
+            .article-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>文章列表</h1>
+        <p>探索我们的精选文章，发现知识与灵感</p>
+    </div>
+    
+    <div class="article-list">
+        <!-- 文章列表将由 
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1fb7sj.html">消逝的光芒：困兽/Dying Light: The Beast动作冒险</a></h2>
+        <div class="article-excerpt">你是凯尔·克兰，遭受了多年的实验，被改造成了半人半野兽的怪物。在开放世界和动作生存恐怖相结合的独特游戏体验里，追杀把你变成这个样子的罪魁祸首。包含DLC• Dying Light: The Beast - Hero Of Harran Bundle• Dying Light: The Beast -...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="vw9rm.html">《侠落：百花杀尽》创新类回合制冒险RPG</a></h2>
+        <div class="article-excerpt">《侠落：百花杀尽》是一款融合了桌游常用的「骰子元素」+「大地图探索」的创新类回合制冒险RPG。在游戏中，你将一步步揭开这个黑暗且神秘的世界中的种种怪象，结识以各种极端的方式来践行自己心中的「侠」的各种侠客，一起达成你们的使命。版本介绍Build.19968264|容量4.13GB|官方简体中文|支持...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ovgjxkvkaw.html">刺客信条：启示录/Assassin's Creed Revelations</a></h2>
+        <div class="article-excerpt"><h1><b>当信仰之跃遇上历史的谜团：《刺客信条：启示录》</b></h1><p>当一位传奇刺客功成名就，站在巅峰之上，他的下一步会是什么？《刺客信条：启示录》将Ezio Auditore带入了一个充满未知与挑战的全新篇章。他不再满足于过往的辉煌，而是毅然决然地追随其先祖Altaïr的足迹，踏上了...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%90%AF%E7%A4%BA%E5%BD%95" class="tag">启示录</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="meqvu.html">御炮少女/TurretGirls动作冒险</a></h2>
+        <div class="article-excerpt">游戏介绍外星怪兽正从时空裂痕涌入，只有一个女孩和她的炮塔挡住了他们的去路！锁定、上弹、炸毁他们--因为如果她今天活不下去，明天就没有蛋包饭了！地球就靠她了！版本介绍Build.19821031|容量2.26GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9b1fpdwvxe.html">权臣/The Minister</a></h2>
+        <div class="article-excerpt"><p><b>《权臣/The Minister》</b>是一款深度沉浸的回合制角色扮演游戏，故事发生在一个风雨飘摇的架空王朝。你将化身为一位备受敬仰的儒圣弟子，肩负着匡扶社稷、解救万民于水火的重任。</p><p>面对内忧外患，你必须步步为营，小心谨慎。一方面，你需要<b>培养</b>自己的<b>党羽<...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%9D%83%E8%87%A3%EF%BC%8C%E5%9B%9E%E5%90%88%E5%88%B6%EF%BC%8C%E8%A7%92%E8%89%B2%E6%89%AE%E6%BC%94" class="tag">权臣，回合制，角色扮演</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="rf6l598z.html">丧尸围城：豪华复刻版/Dead Rising Deluxe Remaster</a></h2>
+        <div class="article-excerpt">游戏介绍丧尸围城以最新画质再度登场！豪华复刻版不单对丧尸杀戮动作游戏丧尸围城系列的首作进行了全面的图像革新，还包含全语音，自动保存等多种便利功能。快来亲身体验这极致的炼狱与无边的自由吧！版本介绍Build.19664981|容量66GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onc...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cj42opzda.html">灾后修复师/RoadCraft Rebuild Edition模拟经营</a></h2>
+        <div class="article-excerpt">作为一位专门应对自然灾害的重建专家，运用你的建筑机械重振当地经济。清理废墟，修复受损设备，重建被恶劣天气摧毁的道路和桥梁，还有更多任务等你完成！版本介绍v4.1.0.1|容量66.5GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https:...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="4o6nx4kwgw5z.html">被感染者/The Infected/模拟经营</a></h2>
+        <div class="article-excerpt">游戏介绍《被感染者》是一款开放世界基地建造类动作冒险游戏。在游戏中你需要建立你的基地保护自己不受野生动物和感染的吸血鬼的伤害，将舞台上所有的人都变成僵尸，记住一定要堵住他们逃生的入口，否则游戏就算失败了。版本介绍v23.1|容量7.38GB|官方简体中文|支持键盘.鼠标下载地址： <span onc...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="l6s3esoitc.html">时间旅者：重生曙光/Cronos: The New Dawn</a></h2>
+        <div class="article-excerpt">全新生存恐怖体验，尽在《时间旅者：重生曙光》在残酷的未来废土世界求生，对抗梦魇般的融合怪物，穿梭时空收割灵魂，同时探寻那场让人类毁灭的末日灾变起源。版本介绍Build.19827388|容量23.1GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="t9m4e.html">地狱即我们/Hell is Us/动作冒险游戏</a></h2>
+        <div class="article-excerpt">如果战争是我们最所接近的人间地狱，那会因为这世界上藏着最可怕的恶魔——人类。在一个被内乱摧残与世隔绝的国家，发现你过去的秘密，应对一场神秘灾难的后果。版本介绍v1.3.36.43556|容量20.4GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yx9e.html">合金天使：堕入伊甸/METAL EDEN/动作冒险</a></h2>
+        <div class="article-excerpt">一款惊险刺激的第一人称科幻射击游戏。HYPER UNIT ASKA被派去执行自杀式任务，要从一个变成了致命陷阱的轨道城市Moebius中拯救市民的核心。深入网络战争，对抗工程师，揭开METAL EDEN的秘密。版本介绍v1.0.0|容量20.8GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<sp...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="hpebed5ea.html">空洞骑士：丝之歌/Hollow Knight: Silksong</a></h2>
+        <div class="article-excerpt">游戏介绍探索《空洞骑士：丝之歌》中庞大的诅咒王国！在这个由丝线与歌声统治的地下世界中，攀登顶峰的旅途，亦是探索、战斗与生存的考验版本介绍v1.0.28324|容量7.56GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器下载地址：<span onclick="window.open('https...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1d29o8oa.html">失落之魂/Lost Soul Aside国产动作冒险游戏</a></h2>
+        <div class="article-excerpt">游戏介绍在《失落之魂》的世界里，开启一场波澜壮阔的史诗征途，从星穹之外神秘维度的入侵者手中，拯救挚爱妹妹，守护全人类的命运。版本介绍Build.19738594|容量61.9GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https://pa...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9azfgit.html">植物大战僵尸杂交版v3.11 0/Plants vsZombies</a></h2>
+        <div class="article-excerpt"><p><h1>植物大战僵尸：杂交版V3.11——塔防策略的全新进化</h1></p><p><b>植物大战僵尸杂交版</b>，是由B站UP主@潜艇伟伟迷倾力打造的魔改塔防游戏，在经典原作的基础上，大胆融入了创新元素。它并非简单的mod，而是一次对植物大战僵尸游戏机制的深度拓展与革新。</p><p>这款...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8" class="tag">植物大战僵尸</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="x1k52a.html">牧场物语 来吧！风之繁华集市/STORY OF SEASONS</a></h2>
+        <div class="article-excerpt"><h1><b>《牧场物语：风之繁华集市》—— 打造属于你的田园诗篇</b></h1><p>在《牧场物语》系列的最新作《风之繁华集市》中，你将踏入风景如画的煦风镇，开启一段温馨而充满活力的牧场生活。在这里，你不仅可以体验到传统牧场经营的乐趣，更能参与到充满活力的集市活动中，与小镇居民建立深厚的情谊，共...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%89%A7%E5%9C%BA%E7%89%A9%E8%AF%AD" class="tag">牧场物语</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="t1l2xxuflc.html">战争机器：重装上阵/Gears of War: Reloaded</a></h2>
+        <div class="article-excerpt">《战争机器：重装上阵》是由The Coalition联合Sumo Interactive与Disbelief开发的经典第三人称射击游戏重制版。作为《战争机器》系列20周年献礼之作，本作在保留2006年原版核心玩法的基础上，针对次世代硬件进行深度优化，带来4K分辨率、战役模式60 FPS与多人模式12...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8lkw04q9l.html">合金装备3：重制版/METAL GEAR SOLID Δ: SNAKE EATER</a></h2>
+        <div class="article-excerpt">游戏介绍全部故事的起点。 以2004年推出的「METAL GEAR SOLID 3 SNAKE EATER」为范本的重制版作品。 在维持原作剧情与世界观的同时，透过最新的画面与富立体感的音效表现，享受在丛林中的极致求生匿踪动作体验。版本介绍v1.1.2|容量94GB|官方简体中文|支持键盘.鼠标.手...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="amhaw2d78.html">《人渣》GamepiresCroteam开放世界生存动作游戏</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《人渣》是由Gamepires、Croteam制作的一款开放世界生存动作游戏，背景设定类似于电影《死亡飞车》，玩家们将扮演一座监狱岛上的囚犯，而他们必须在这座小岛进行求生游戏，过程都将通过直播给所有付费观众观看，这就是一...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div> 占位符动态生成 -->
+        
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1fb7sj.html">消逝的光芒：困兽/Dying Light: The Beast动作冒险</a></h2>
+        <div class="article-excerpt">你是凯尔·克兰，遭受了多年的实验，被改造成了半人半野兽的怪物。在开放世界和动作生存恐怖相结合的独特游戏体验里，追杀把你变成这个样子的罪魁祸首。包含DLC• Dying Light: The Beast - Hero Of Harran Bundle• Dying Light: The Beast -...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="vw9rm.html">《侠落：百花杀尽》创新类回合制冒险RPG</a></h2>
+        <div class="article-excerpt">《侠落：百花杀尽》是一款融合了桌游常用的「骰子元素」+「大地图探索」的创新类回合制冒险RPG。在游戏中，你将一步步揭开这个黑暗且神秘的世界中的种种怪象，结识以各种极端的方式来践行自己心中的「侠」的各种侠客，一起达成你们的使命。版本介绍Build.19968264|容量4.13GB|官方简体中文|支持...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="ovgjxkvkaw.html">刺客信条：启示录/Assassin's Creed Revelations</a></h2>
+        <div class="article-excerpt"><h1><b>当信仰之跃遇上历史的谜团：《刺客信条：启示录》</b></h1><p>当一位传奇刺客功成名就，站在巅峰之上，他的下一步会是什么？《刺客信条：启示录》将Ezio Auditore带入了一个充满未知与挑战的全新篇章。他不再满足于过往的辉煌，而是毅然决然地追随其先祖Altaïr的足迹，踏上了...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E5%90%AF%E7%A4%BA%E5%BD%95" class="tag">启示录</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="meqvu.html">御炮少女/TurretGirls动作冒险</a></h2>
+        <div class="article-excerpt">游戏介绍外星怪兽正从时空裂痕涌入，只有一个女孩和她的炮塔挡住了他们的去路！锁定、上弹、炸毁他们--因为如果她今天活不下去，明天就没有蛋包饭了！地球就靠她了！版本介绍Build.19821031|容量2.26GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window....</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9b1fpdwvxe.html">权臣/The Minister</a></h2>
+        <div class="article-excerpt"><p><b>《权臣/The Minister》</b>是一款深度沉浸的回合制角色扮演游戏，故事发生在一个风雨飘摇的架空王朝。你将化身为一位备受敬仰的儒圣弟子，肩负着匡扶社稷、解救万民于水火的重任。</p><p>面对内忧外患，你必须步步为营，小心谨慎。一方面，你需要<b>培养</b>自己的<b>党羽<...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%9D%83%E8%87%A3%EF%BC%8C%E5%9B%9E%E5%90%88%E5%88%B6%EF%BC%8C%E8%A7%92%E8%89%B2%E6%89%AE%E6%BC%94" class="tag">权臣，回合制，角色扮演</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="rf6l598z.html">丧尸围城：豪华复刻版/Dead Rising Deluxe Remaster</a></h2>
+        <div class="article-excerpt">游戏介绍丧尸围城以最新画质再度登场！豪华复刻版不单对丧尸杀戮动作游戏丧尸围城系列的首作进行了全面的图像革新，还包含全语音，自动保存等多种便利功能。快来亲身体验这极致的炼狱与无边的自由吧！版本介绍Build.19664981|容量66GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onc...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="cj42opzda.html">灾后修复师/RoadCraft Rebuild Edition模拟经营</a></h2>
+        <div class="article-excerpt">作为一位专门应对自然灾害的重建专家，运用你的建筑机械重振当地经济。清理废墟，修复受损设备，重建被恶劣天气摧毁的道路和桥梁，还有更多任务等你完成！版本介绍v4.1.0.1|容量66.5GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https:...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="4o6nx4kwgw5z.html">被感染者/The Infected/模拟经营</a></h2>
+        <div class="article-excerpt">游戏介绍《被感染者》是一款开放世界基地建造类动作冒险游戏。在游戏中你需要建立你的基地保护自己不受野生动物和感染的吸血鬼的伤害，将舞台上所有的人都变成僵尸，记住一定要堵住他们逃生的入口，否则游戏就算失败了。版本介绍v23.1|容量7.38GB|官方简体中文|支持键盘.鼠标下载地址： <span onc...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="l6s3esoitc.html">时间旅者：重生曙光/Cronos: The New Dawn</a></h2>
+        <div class="article-excerpt">全新生存恐怖体验，尽在《时间旅者：重生曙光》在残酷的未来废土世界求生，对抗梦魇般的融合怪物，穿梭时空收割灵魂，同时探寻那场让人类毁灭的末日灾变起源。版本介绍Build.19827388|容量23.1GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="t9m4e.html">地狱即我们/Hell is Us/动作冒险游戏</a></h2>
+        <div class="article-excerpt">如果战争是我们最所接近的人间地狱，那会因为这世界上藏着最可怕的恶魔——人类。在一个被内乱摧残与世隔绝的国家，发现你过去的秘密，应对一场神秘灾难的后果。版本介绍v1.3.36.43556|容量20.4GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="yx9e.html">合金天使：堕入伊甸/METAL EDEN/动作冒险</a></h2>
+        <div class="article-excerpt">一款惊险刺激的第一人称科幻射击游戏。HYPER UNIT ASKA被派去执行自杀式任务，要从一个变成了致命陷阱的轨道城市Moebius中拯救市民的核心。深入网络战争，对抗工程师，揭开METAL EDEN的秘密。版本介绍v1.0.0|容量20.8GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<sp...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="hpebed5ea.html">空洞骑士：丝之歌/Hollow Knight: Silksong</a></h2>
+        <div class="article-excerpt">游戏介绍探索《空洞骑士：丝之歌》中庞大的诅咒王国！在这个由丝线与歌声统治的地下世界中，攀登顶峰的旅途，亦是探索、战斗与生存的考验版本介绍v1.0.28324|容量7.56GB|官方简体中文|支持键盘.鼠标.手柄|赠多项修改器下载地址：<span onclick="window.open('https...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="1d29o8oa.html">失落之魂/Lost Soul Aside国产动作冒险游戏</a></h2>
+        <div class="article-excerpt">游戏介绍在《失落之魂》的世界里，开启一场波澜壮阔的史诗征途，从星穹之外神秘维度的入侵者手中，拯救挚爱妹妹，守护全人类的命运。版本介绍Build.19738594|容量61.9GB|官方简体中文|支持键盘.鼠标.手柄下载地址：<span onclick="window.open('https://pa...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="9azfgit.html">植物大战僵尸杂交版v3.11 0/Plants vsZombies</a></h2>
+        <div class="article-excerpt"><p><h1>植物大战僵尸：杂交版V3.11——塔防策略的全新进化</h1></p><p><b>植物大战僵尸杂交版</b>，是由B站UP主@潜艇伟伟迷倾力打造的魔改塔防游戏，在经典原作的基础上，大胆融入了创新元素。它并非简单的mod，而是一次对植物大战僵尸游戏机制的深度拓展与革新。</p><p>这款...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8" class="tag">植物大战僵尸</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="x1k52a.html">牧场物语 来吧！风之繁华集市/STORY OF SEASONS</a></h2>
+        <div class="article-excerpt"><h1><b>《牧场物语：风之繁华集市》—— 打造属于你的田园诗篇</b></h1><p>在《牧场物语》系列的最新作《风之繁华集市》中，你将踏入风景如画的煦风镇，开启一段温馨而充满活力的牧场生活。在这里，你不仅可以体验到传统牧场经营的乐趣，更能参与到充满活力的集市活动中，与小镇居民建立深厚的情谊，共...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                <a href="tagslist.html?tag=%E7%89%A7%E5%9C%BA%E7%89%A9%E8%AF%AD" class="tag">牧场物语</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="t1l2xxuflc.html">战争机器：重装上阵/Gears of War: Reloaded</a></h2>
+        <div class="article-excerpt">《战争机器：重装上阵》是由The Coalition联合Sumo Interactive与Disbelief开发的经典第三人称射击游戏重制版。作为《战争机器》系列20周年献礼之作，本作在保留2006年原版核心玩法的基础上，针对次世代硬件进行深度优化，带来4K分辨率、战役模式60 FPS与多人模式12...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="8lkw04q9l.html">合金装备3：重制版/METAL GEAR SOLID Δ: SNAKE EATER</a></h2>
+        <div class="article-excerpt">游戏介绍全部故事的起点。 以2004年推出的「METAL GEAR SOLID 3 SNAKE EATER」为范本的重制版作品。 在维持原作剧情与世界观的同时，透过最新的画面与富立体感的音效表现，享受在丛林中的极致求生匿踪动作体验。版本介绍v1.1.2|容量94GB|官方简体中文|支持键盘.鼠标.手...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="article-item">
+    <div class="article-content">
+        <h2 class="article-title"><a href="amhaw2d78.html">《人渣》GamepiresCroteam开放世界生存动作游戏</a></h2>
+        <div class="article-excerpt"><h3>游戏视频</h3><h3></h3><h3>游戏截图</h3> 游戏介绍《人渣》是由Gamepires、Croteam制作的一款开放世界生存动作游戏，背景设定类似于电影《死亡飞车》，玩家们将扮演一座监狱岛上的囚犯，而他们必须在这座小岛进行求生游戏，过程都将通过直播给所有付费观众观看，这就是一...</div>
+        <div class="article-meta">
+            <div class="article-tags">
+                
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- 分页部分 - 使用动态生成的HTML -->
+    <div class="pagination">
+        <div class="pagination"><a href="posts_42.html">上一页</a><a href="posts.html">11</a><span>...</span><a href="posts_39.html">39</a><a href="posts_40.html">40</a><a href="posts_41.html">41</a><a href="posts_42.html">42</a><span class="current">43</span><a href="posts_44.html">下一页</a></div>
+    </div>
+    
+    <!-- 友情链接区域 -->
+    <div class="friendly-links">
+        <div class="container">
+            <h3 class="title">生活点滴好用</h3>
+            <ul>
+                <li><a href="http://www.weizhang8.cn/" rel="nofollow" target="_blank">违章查询</a></li>
+                <li><a href="https://www.didiglobal.com/" rel="nofollow" target="_blank">滴滴打车</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <h3 class="title">购物网址大全</h3>
+            <ul>
+                <li><a href="http://www.vip.com/" rel="nofollow" target="_blank">唯品会</a></li>
+                <li><a href="http://www.vmall.com/" rel="nofollow" target="_blank">华为商城</a></li>
+                <li><a href="http://www.tmall.com/" rel="nofollow" target="_blank">天猫商城</a></li>
+                <li><a href="https://www.amazon.cn/" rel="nofollow" target="_blank">亚马逊</a></li>
+                <li><a href="http://www.jd.com/" rel="nofollow" target="_blank">京东商城</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 小梦静态博客 | <a href="sitemap5.xml" target="_blank">网站地图</a></p>
+    </div>
+</body>
+</html>

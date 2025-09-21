@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Language" content="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求生指南2-纯净下载库</title>
+<meta property="og:title" content="求生指南2">
+<meta property="og:description" content="<h1>求生指南2：在僵尸末日中生存</h1><p>欢迎来到路易斯安那，一个被僵尸蹂躏的世界。在这里，生存不再是理所当然，而是一场永无止境的战斗。你准备好面对挑战了吗？</p><p><b>单人求生：</b>独自踏上求生之路，挑战极限。搜寻食物、水源和庇护所，制作必要的工具和武器，与成群的嗜血僵尸作战...">
+<meta property="og:url" content="https://xiazaiku.github.io/cuhh.html">
+<meta property="og:type" content="article">
+    <style>
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            color: #444;
+            margin-bottom: 30px;
+        }
+        .tags {
+            margin: 30px 0;
+            font-size: 0.9em;
+        }
+        .tags a {
+            background-color: #eee;
+            color: #333;
+            padding: 5px 10px;
+            text-decoration: none;
+            margin-right: 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .tags a:hover {
+            background-color: #ccc;
+        }
+        /* 静态推荐文章样式 */
+        .recommend-articles {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #f5f9ff;
+            border-radius: 8px;
+            border: 1px solid #e0e8f5;
+        }
+
+        .recommend-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .recommend-list li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .recommend-list li:before {
+            content: "•";
+            color: #4a89dc;
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        .recommend-list a {
+            color: #3a7bd5;
+            text-decoration: none;
+        }
+        .recommend-list a:hover {
+            color: #00d2ff;
+            text-decoration: underline;
+        }
+        
+        /* 随机标签推荐样式 */
+        .recommend-tags {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #fff5f5;
+            border-radius: 8px;
+            border: 1px solid #f5e0e0;
+        }
+        
+        .recommend-tags h3 {
+            margin-top: 0;
+            color: #d35400;
+            border-bottom: 1px dashed #f5b0b0;
+            padding-bottom: 10px;
+        }
+        
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag-cloud a {
+            background: linear-gradient(to right, #fd746c, #ff9068);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .tag-cloud a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: linear-gradient(to right, #ff9068, #fd746c);
+        }
+        
+        /* 友情链接样式优化 */
+        .friendly-links {
+            margin-top: 50px;
+        }
+        .friendly-links .container {
+            margin-bottom: 30px;
+        }
+        .friendly-links .title {
+            font-size: 1.1em;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .friendly-links ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .friendly-links li a {
+            display: block;
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9em;
+            border: 1px solid #eee;
+        }
+        .friendly-links li a:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+    <script src="/shequ.js"></script>
+</head>
+<body>
+
+    <h1>求生指南2</h1>
+
+    <div class="content">
+        <p> <h1>求生指南2：在僵尸末日中生存</h1><p>欢迎来到路易斯安那，一个被僵尸蹂躏的世界。在这里，生存不再是理所当然，而是一场永无止境的战斗。你准备好面对挑战了吗？</p><p><b>单人求生：</b>独自踏上求生之路，挑战极限。搜寻食物、水源和庇护所，制作必要的工具和武器，与成群的嗜血僵尸作战。你的智慧和勇气将是你唯一的依靠。</p><p><b>合作求生：</b>与朋友并肩作战，共同对抗末日威胁。分工合作，建立安全的营地，互相支援，提高生存几率。团队合作是战胜僵尸浪潮的关键。</p><p><b>生存要素：</b></p><ul>    <li><b>资源管理：</b>合理分配食物、水和材料，确保生存所需。</li>    <li><b>工具制作：</b>利用收集到的资源，制作武器、工具和陷阱，提高生存能力。</li>    <li><b>营地建设：</b>建立坚固的庇护所，抵御僵尸的袭击，提供安全的休息场所。</li>    <li><b>技能提升：</b>通过战斗和完成任务，提升角色的技能，解锁新的能力。</li>    <li><b>探索世界：</b>探索路易斯安那的各个角落，寻找隐藏的资源和秘密。</li></ul><p><b>版本信息：</b></p><ul>    <li>版本号：v1824651</li>    <li>游戏容量：5.19GB</li>    <li>语言：官方简体中文</li>    <li>支持设备：键盘、鼠标、手柄</li></ul><p><b>下载地址：</b></p><p><b>阿里*云盘：</b><a href="https://www.aliyundrive.com/s/kds9Cvuj9aw" target="_blank">点击下载</a></p><p><b>天翼*云盘：</b><a href="https://cloud.189.cn/t/a2YfmyBjyi6z" target="_blank">点击下载</a> (访问码：5z2v)</p><p>现在就开始你的求生之旅吧！选择你的道路，是独自求生，还是与朋友共同抗敌？你的命运掌握在自己手中。记住，活下去，是唯一的选择。</p><p>在《求生指南2》中，你将面对各种各样的僵尸，每种僵尸都有其独特的攻击方式和弱点。你需要仔细观察，制定合适的战术，才能有效地击败它们。此外，游戏还提供了丰富的武器和装备供你选择，包括近战武器、远程武器和各种防御装备。你可以根据自己的喜好和战斗风格，选择合适的装备，打造属于自己的生存之路。</p><p>除了与僵尸战斗，你还需要关注自己的身体状况。饥饿、口渴和疲劳都会影响你的生存能力。你需要及时补充食物和水分，保持充足的睡眠，才能保持最佳状态。此外，游戏中还有各种各样的疾病和伤势，你需要及时治疗，否则可能会危及生命。 </p><p>《求生指南2》的世界充满了危险和挑战，但同时也充满了机遇和希望。只要你足够聪明、勇敢和坚韧，就一定能够在这个末日世界中生存下去。 </p><p>祝你好运，求生者！</p></p>
+    </div>
+    
+    <!-- 静态推荐文章区域 -->
+    <div class="recommend-articles">
+        <h3>篇随机内容推荐</h3>
+        <ul class="recommend-list">
+            <li><a href="mqyckve7ux.html">残暴弗拉迪克/VLADiK BRUTAL枪战射击</a></li><li><a href="c6lk6vr.html">暗黑地牢2/Darkest Dungeon II/角色扮演</a></li><li><a href="t6q06f.html">太平洋雄风/Victory At Sea Pacific</a></li><li><a href="22kgeag.html">纪元：变异收藏版/ANNO/动作冒险</a></li><li><a href="9npb6l.html">雷纳提斯/REYNATIS/角色扮演游戏</a></li>
+        </ul>
+    </div>
+    
+    <!-- 随机标签推荐区域 - 新增 -->
+    <div class="recommend-tags">
+        <h3>热门标签推荐</h3>
+        <div class="tag-cloud">
+            <a href="tagsp316e3vd9.html" class="tag">活侠传</a> <a href="tagsbuxdh.html" class="tag">暗黑之日</a> <a href="tags5quapm3.html" class="tag">生存建造</a> <a href="tagsnvli.html" class="tag">时光旅诗</a> <a href="tags0312tvfb1g.html" class="tag">创之轨迹</a> 
+        </div>
+    </div>
+    
+    <!-- 友情链接区域 -->
+    <div class="friendly-links">
+        <div class="container">
+            <h4 class="title">生活点滴好用</h4>
+            <ul>
+                <li><a href="http://www.weizhang8.cn/" rel="nofollow" target="_blank">违章查询</a></li>
+                <li><a href="https://www.didiglobal.com/" rel="nofollow" target="_blank">滴滴打车</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <h4 class="title">购物网址大全</h4>
+            <ul>
+                <li><a href="http://www.vip.com/" rel="nofollow" target="_blank">唯品会</a></li>
+                <li><a href="http://www.vmall.com/" rel="nofollow" target="_blank">华为商城</a></li>
+                <li><a href="http://www.tmall.com/" rel="nofollow" target="_blank">天猫商城</a></li>
+                <li><a href="https://www.amazon.cn/" rel="nofollow" target="_blank">亚马逊</a></li>
+                <li><a href="http://www.jd.com/" rel="nofollow" target="_blank">京东商城</a></li>
+            </ul>
+        </div>
+    </div>
+   <a href="sitemap5.xml" target="_blank">网站地图</a>
+</body>
+</html>
